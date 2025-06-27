@@ -1,14 +1,12 @@
 import React, { useEffect } from "react";
-import { getProviders, signIn } from 'next-auth/react';
 import Dot from "../components/ui/Dot";
 import Link from "next/link";
 
-const Login = ({ providers }) => {
-
+const Login = () => {
   // Mouse Position
   const [mousePos, setMousePos] = React.useState({ x: 0, y: 0 });
   // Update mouse position on mousemove
-   useEffect(() => {
+  useEffect(() => {
     const handler = (e) => {
       setMousePos({ x: e.clientX, y: e.clientY });
     };
@@ -17,8 +15,45 @@ const Login = ({ providers }) => {
     return () => {
       window.removeEventListener("mousemove", handler);
     }
-  }
-  , []);
+  }, []);
+
+  const redirectToAuthCodeFlow = async (clientId) => {
+    const verifier = generateCodeVerifier(128);
+    const challenge = await generateCodeChallenge(verifier);
+
+    // Include the verifier in the state parameter to pass it through the callback URL
+    const state = verifier;
+
+    const params = new URLSearchParams();
+    params.append("client_id", clientId);
+    params.append("response_type", "code");
+    params.append("redirect_uri", "http://127.0.0.1:3002/callback");
+    params.append("scope", "user-read-private user-read-email playlist-read-private playlist-read-collaborative user-library-read user-top-read user-follow-read user-read-playback-state user-modify-playback-state streaming");
+    params.append("code_challenge_method", "S256");
+    params.append("code_challenge", challenge);
+    params.append("state", state);
+
+    document.location = `https://accounts.spotify.com/authorize?${params.toString()}`;
+  };
+
+  const generateCodeVerifier = (length) => {
+    let text = '';
+    let possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+    for (let i = 0; i < length; i++) {
+      text += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+    return text;
+  };
+
+  const generateCodeChallenge = async (codeVerifier) => {
+    const data = new TextEncoder().encode(codeVerifier);
+    const digest = await window.crypto.subtle.digest('SHA-256', data);
+    return btoa(String.fromCharCode.apply(null, [...new Uint8Array(digest)]))
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '');
+  };
 
   return (
     <main className="overflow-hidden h-screen">
@@ -37,16 +72,20 @@ const Login = ({ providers }) => {
           <h2 className="text-2xl font-semibold text-white break-normal mb-2">Discover Vinyls for Your Playlists</h2>
 
 
-          {Object.values(providers).map(({ name, id }) => (
-            <div key={name}>
-              <button className="bg-purple-800 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded-full shadow-md transition duration-300 ease-in-out transform hover:scale-105 m-2" onClick={() => signIn(id, { callbackUrl: "/" })}>
-                Log In with {name} Premium
-              </button>
-            </div>
-          ))}
-            <p className="text-sm text-gray-500 mt-2">
-              A Spotify Premium account ensures uninterrupted crate digging.
-            </p>
+          <button className="bg-purple-800 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded-full shadow-md transition duration-300 ease-in-out transform hover:scale-105 m-2" onClick={() => {
+            const clientId = process.env.NEXT_PUBLIC_CLIENT_ID;
+            if (clientId) {
+              redirectToAuthCodeFlow(clientId);
+            } else {
+              console.error("Spotify Client ID is not defined. Please set NEXT_PUBLIC_CLIENT_ID in your environment variables.");
+              alert("Spotify authentication is not configured properly. Please contact support.");
+            }
+          }}>
+            Log In with Spotify Premium
+          </button>
+          <p className="text-sm text-gray-500 mt-2">
+            A Spotify Premium account ensures uninterrupted crate digging.
+          </p>
         </div>
       </div>
 
@@ -59,12 +98,3 @@ const Login = ({ providers }) => {
 };
 
 export default Login;
-
-export async function getServerSideProps() {
-  const providers = await getProviders();
-  return {
-    props: {
-      providers,
-    },
-  };
-}

@@ -1,31 +1,30 @@
 import Link from "next/link";
 
 const PlaylistItem = ({ playlist, color, isActive, onClick }) => {
-  const activeHoverClass = isActive ? `opacity-100` : '';
-  const activeClass = isActive ? `scale-110 duration-300 ease-in-out` : '';
-
   return (
-          <div
-            key={playlist.id}
-            className={`carousel-item flex flex-col w-48 cursor-pointer ${activeClass}`}
-            onClick={onClick}
-          >
-            <Link 
-            href={``}
-            >
-              <div className="relative group">
-                <img
-                  src={playlist.images[0].url}
-                  alt="album art"
-                  className="object-cover rounded-box h-full w-full"
-                />
-                <div className={`${activeHoverClass} absolute inset-0 ${color} bg-opacity-50 flex items-center justify-center rounded-box opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out`}>
-                  <p className="text-white text-xl font-bold text-center">{playlist.name}</p>
-                </div>
-              </div>
-            </Link>
-          </div>
-  )
-}
+    <div
+      className={`flex flex-col cursor-pointer border border-[var(--border)] ${isActive ? 'border-[var(--accent)] border-2' : ''}`}
+      onClick={onClick}
+    >
+      <div className="relative group">
+        <img
+          src={playlist.images && playlist.images.length > 0 ? playlist.images[0].url : "/recordImage.png"}
+          alt={playlist.name}
+          className="w-full h-48 object-cover"
+        />
+        <div className={`absolute inset-0 ${color} bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-200 ease-in-out flex items-center justify-center`}>
+          <p className="text-[var(--primary-text)] text-lg font-bold text-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 ease-in-out">{playlist.name}</p>
+        </div>
+      </div>
+      <div className="p-4">
+        <h3 className="text-[var(--primary-text)] font-bold text-base group-hover:text-[var(--accent)] transition-colors duration-200">{playlist.name}</h3>
+        <p className="text-[var(--primary-text)] text-sm">{playlist.description || "No description available"}</p>
+        <Link href={`/album/${playlist.id}`} className="mt-2 inline-block text-[var(--primary-text)] text-sm font-bold border border-[var(--border)] px-3 py-1 hover:text-[var(--accent)] hover:border-[var(--accent)] transition-all duration-200">
+          View
+        </Link>
+      </div>
+    </div>
+  );
+};
 
-export default PlaylistItem
+export default PlaylistItem;

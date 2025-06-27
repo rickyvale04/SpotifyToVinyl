@@ -1,5 +1,6 @@
-const clientId = process.env.NEXT_PUBLIC_CLIENT_ID; // Replace with your client ID
-const code = undefined;
+const clientId = process.env.NEXT_PUBLIC_CLIENT_ID; // Client ID from environment variable
+const params = new URLSearchParams(window.location.search);
+const code = params.get("code");
 
 if (!code) {
     redirectToAuthCodeFlow(clientId);
@@ -18,8 +19,8 @@ export async function redirectToAuthCodeFlow(clientId) {
     const params = new URLSearchParams();
     params.append("client_id", clientId);
     params.append("response_type", "code");
-    params.append("redirect_uri", "http://localhost:5173/callback");
-    params.append("scope", "user-read-private user-read-email");
+    params.append("redirect_uri", "http://127.0.0.1:3003/callback");
+    params.append("scope", "user-read-private user-read-email playlist-read-private playlist-read-collaborative user-library-read user-top-read user-follow-read user-read-playback-state user-modify-playback-state streaming");
     params.append("code_challenge_method", "S256");
     params.append("code_challenge", challenge);
 
@@ -52,7 +53,7 @@ export async function getAccessToken(clientId, code) {
     params.append("client_id", clientId);
     params.append("grant_type", "authorization_code");
     params.append("code", code);
-    params.append("redirect_uri", "http://localhost:5173/callback");
+    params.append("redirect_uri", "http://127.0.0.1:3003/callback");
     params.append("code_verifier", verifier);
 
     const result = await fetch("https://accounts.spotify.com/api/token", {
@@ -70,12 +71,12 @@ async function fetchProfile(token) {
         method: "GET", headers: { Authorization: `Bearer ${token}` }
     });
 
-    const profile = await fetchProfile(token);
-    console.log(profile);
-
     return await result.json();
 }
 
 function populateUI(profile) {
-    // TODO: Update UI with profile data
+    // This function would be used to update the UI with profile data.
+    // For now, we'll log the profile data to the console for debugging.
+    console.log("Profile data:", profile);
+    // In a full implementation, you would update DOM elements here.
 }

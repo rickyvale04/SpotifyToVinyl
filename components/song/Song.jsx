@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from "react";
 import VinylItem from "../main/VinylItem";
 import defaultRecord from "../../public/recordImage.png";
 
-const Song = ({ track }) => {
+const Song = ({ track, order }) => {
   const spotifyAPI = useSpotify();
   const itemsPerPage = 5;
 
@@ -116,11 +116,14 @@ const Song = ({ track }) => {
   }, [track]);
 
   return (
-    <tr key={track.id}>
-      <td>
+    <tr key={track.id} className="border-b border-[var(--border)] hover:bg-[var(--secondary-bg)]">
+      <td className="py-3 px-2">
         <div className="flex items-center gap-3">
+          <div className="w-6 text-center text-[var(--primary-text)] opacity-70">
+            {order}
+          </div>
           <div className="avatar">
-            <div className="mask mask-squircle w-12 h-12">
+            <div className="w-10 h-10 border border-[var(--border)]">
               <img
                 src={
                   track.album.images?.[0]?.url || defaultRecord
@@ -130,59 +133,57 @@ const Song = ({ track }) => {
             </div>
           </div>
           <div>
-            <div className="font-bold">{track.name}</div>
-            <div className="text-sm opacity-50">{track.artists[0].name}</div>
+            <div className="font-bold text-[var(--primary-text)]">{track.name}</div>
+            <div className="text-sm text-[var(--primary-text)] opacity-70">{track.artists[0].name}</div>
           </div>
         </div>
       </td>
-      <td>
-        {track.album.name}
-        <br />
-        <span className="badge badge-ghost badge-sm">
+      <td className="py-3 px-2">
+        <div className="text-[var(--primary-text)]">{track.album.name}</div>
+        <div className="text-xs text-[var(--primary-text)] opacity-70 mt-1">
           Release Date: {track.album.release_date}
-        </span>
+        </div>
       </td>
-      <td>
+      <td className="py-3 px-2">
         <div className="flex justify-center">
           {vinyls.length > 0 ? (
             <CheckIcon
-              className="w-10 p-1 text-[#18D860]"
+              className="w-6 h-6 text-[var(--accent)] cursor-pointer"
               onClick={() => setShowVinyls(!showVinyls)}
             />
           ) : (
-            <XIcon className="w-10 p-1 text-red-500" />
+            <XIcon className="w-6 h-6 text-[var(--primary-text)] opacity-50" />
           )}
         </div>
       </td>
-      <td>
+      <td className="py-3 px-2">
         <div className="flex justify-center">
-
-        <button
-          className="btn btn-ghost btn-xs"
-          onClick={() =>
-            document.getElementById(`my_modal_${track.id}`).showModal()
-          }
+          <button
+            className="text-[var(--primary-text)] hover:text-[var(--accent)] text-sm font-bold border border-[var(--border)] px-3 py-1 rounded"
+            onClick={() =>
+              document.getElementById(`my_modal_${track.id}`).showModal()
+            }
           >
-          Vinyl Details
-        </button>
-          </div>
+            Vinyl Details
+          </button>
+        </div>
         <dialog id={`my_modal_${track.id}`} className="modal">
-          <div className="modal-box w-full">
+          <div className="modal-box w-full bg-[var(--background)] text-[var(--primary-text)]">
             <table className="table w-full">
               <thead>
-                <tr>
-                  <th>Album</th>
-                  <th>Country</th>
-                  <th>Year</th>
-                  <th>Label</th>
-                  <th>Format</th>
+                <tr className="border-b border-[var(--border)]">
+                  <th className="text-[var(--primary-text)]">Album</th>
+                  <th className="text-[var(--primary-text)]">Country</th>
+                  <th className="text-[var(--primary-text)]">Year</th>
+                  <th className="text-[var(--primary-text)]">Label</th>
+                  <th className="text-[var(--primary-text)]">Format</th>
                   <th></th>
                 </tr>
               </thead>
               <tbody>
                 {vinyls.length === 0 ? (
-                  <tr>
-                    <td colSpan="5">No Vinyl Details</td>
+                  <tr className="border-b border-[var(--border)]">
+                    <td colSpan="5" className="text-[var(--primary-text)] opacity-70">No Vinyl Details</td>
                   </tr>
                 ) : (
                   getCurrentVinyls().map((vinyl, index) => (
@@ -196,8 +197,8 @@ const Song = ({ track }) => {
                 {Array.from({ length: totalPages }, (_, index) => (
                   <button
                     key={index}
-                    className={`btn ${
-                      currentPage === index + 1 ? "btn-active" : ""
+                    className={`px-3 py-1 border border-[var(--border)] text-[var(--primary-text)] hover:text-[var(--accent)] hover:border-[var(--accent)] rounded ${
+                      currentPage === index + 1 ? "bg-[var(--secondary-bg)]" : ""
                     }`}
                     onClick={() => handlePageChange(index + 1)}
                   >
@@ -208,13 +209,13 @@ const Song = ({ track }) => {
             )}
             <div className="modal-action">
               <form method="dialog">
-                <button className="btn">Close</button>
+                <button className="text-[var(--primary-text)] hover:text-[var(--accent)] border border-[var(--border)] px-3 py-1 rounded">Close</button>
               </form>
             </div>
           </div>
         </dialog>
       </td>
-      <td>
+      <td className="py-3 px-2">
         <a
           href={track.external_urls.spotify}
           target="_blank"
@@ -222,7 +223,7 @@ const Song = ({ track }) => {
           className="flex justify-center"
         >
           <img
-            className="w-10 p-1"
+            className="w-8 p-1"
             src="https://links.papareact.com/9xl"
             alt="Spotify Logo"
           />

@@ -24,15 +24,21 @@ const Songs = () => {
   };
 
   return (
-    <div className='md:px-8 flex flex-col space-y-1 pb-28 text-white'>
-        {getCurrentPlaylist().map((track, i) => (
-          <Song key={track.track.id} order={i} track={track.track} />
-        ))}
-      <PageButton
-        currentPage={currentPage}
-        totalPages={totalPages}
-        setCurrentPage={handlePageChange}
-      />
+    <div className='flex flex-col space-y-2 pb-12 text-[var(--primary-text)]'>
+        {getCurrentPlaylist().length > 0 ? (
+          getCurrentPlaylist().map((track, i) => (
+            <Song key={track.track.id} order={i + 1 + (currentPage - 1) * itemsPerPage} track={track.track} />
+          ))
+        ) : (
+          <p className="text-[var(--primary-text)] opacity-70">No tracks available in this playlist.</p>
+        )}
+      <div className="mt-4">
+        <PageButton
+          currentPage={currentPage}
+          totalPages={totalPages}
+          setCurrentPage={handlePageChange}
+        />
+      </div>
     </div>
   );
 };

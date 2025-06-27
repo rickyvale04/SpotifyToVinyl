@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import useSpotify from "../../hooks/useSpotify";
-import Header from "../ui/header/Header";
 import PlaylistGroup from "../ui/playlist/PlaylistGroup";
 import { useRecoilState } from "recoil";
 import { playlistState } from "../../atoms/playlistAtom";
@@ -29,17 +28,17 @@ const Dashboard = () => {
         spotifyAPI.getUserPlaylists().then((data) => {
           setLocalPlaylists(data.body.items);
           localStorage.setItem("playlists", JSON.stringify(data.body.items));
-          setPlaylistRecoil("playlists", JSON.stringify(data.body.items));
+          setPlaylistRecoil(data.body.items);
         });
       }
     }
   }, [session, spotifyAPI]);
 
   return (
-      <div>
-        <Header />
-        <PlaylistGroup playlists={localPlaylists} />
-      </div>
+    <div className="py-4">
+      <h1 className="mb-6">Your Playlists</h1>
+      <PlaylistGroup playlists={localPlaylists} />
+    </div>
   );
 };
 
