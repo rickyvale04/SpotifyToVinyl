@@ -41,12 +41,25 @@ function Sidebar() {
   useEffect(() => {
     // Check for login status after component mounts (client-side only)
     if (typeof window !== 'undefined') {
-      const discogsTokens = localStorage.getItem("discogs_tokens");
-      setIsDiscogsLoggedIn(!!discogsTokens);
-      
+      // Spotify login status
       const spotifyUser = localStorage.getItem("user");
       const spotifyToken = localStorage.getItem("access_token");
       setIsSpotifyLoggedIn(!!spotifyUser || !!spotifyToken);
+      
+      // Discogs login status with validation
+      const checkDiscogsStatus = async () => {
+        try {
+          const { checkAuthStatus } = require("../../lib/discogsAuth");
+          const isValid = await checkAuthStatus();
+          setIsDiscogsLoggedIn(isValid);
+        } catch (error) {
+          console.error("Error validating Discogs authentication status:", error);
+          // Default to checking if tokens exist in case of error
+          const discogsTokens = localStorage.getItem("discogs_tokens");
+          setIsDiscogsLoggedIn(!!discogsTokens);
+        }
+      };
+      checkDiscogsStatus();
     }
   }, []);
 

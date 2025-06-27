@@ -135,6 +135,39 @@ export const getAccessToken = async (requestToken, requestTokenSecret, verifier)
   }
 };
 
+// Check if the stored Discogs tokens are valid by making an API call
+export const checkAuthStatus = async () => {
+  if (typeof window === 'undefined') {
+    // This function should only run on the client side
+    return false;
+  }
+  
+  const tokensStr = localStorage.getItem('discogs_tokens');
+  if (!tokensStr) {
+    return false;
+  }
+  
+  try {
+    const tokens = JSON.parse(tokensStr);
+    if (!tokens.accessToken || !tokens.accessTokenSecret) {
+      return false;
+    }
+    
+    // Attempt to fetch user identity as a simple auth check
+    const response = await makeDiscogsRequest('oauth/identity', tokens.accessToken, tokens.accessTokenSecret);
+    return !!response.username; // If we get a username, tokens are valid
+  } catch (error) {
+    console.error('Error checking Discogs auth status:', error);
+    // If it's an auth error (401 or similar), tokens are invalid
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem('discogs_tokens');
+      return false;
+    }
+    // For other errors (network, etc.), don't clear tokens, assume still logged in
+    return true;
+  }
+};
+
 // Make a request to Discogs API with the access token
 export const makeDiscogsRequest = async (endpoint, accessToken, accessTokenSecret, method = 'GET', data = null) => {
   const consumerKey = process.env.NEXT_PUBLIC_DISC_ID;
