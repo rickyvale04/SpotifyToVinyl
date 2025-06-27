@@ -26,7 +26,7 @@ export default function Layout({ children }) {
       {/* Fixed Navigation Bar */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-[var(--background)] border-b border-[var(--border)] px-4 py-2 md:hidden">
         <div className="flex justify-between items-center">
-          <Link href="/" className="text-[var(--primary-text)] font-bold text-lg uppercase">
+          <Link href="/" className="text-[var(--primary-text)] text-lg font-bold">
             Crate Digger
           </Link>
           <button onClick={toggleMenu} className="text-[var(--primary-text)] focus:outline-none">
@@ -47,29 +47,19 @@ export default function Layout({ children }) {
                   Home
                 </Link>
               </li>
-              <li>
-                <Link href="/search" className="block px-2 py-1 text-[var(--primary-text)] hover:text-[var(--accent)] uppercase text-sm font-bold" onClick={() => setMenuOpen(false)}>
-                  Search
-                </Link>
-              </li>
             </ul>
           </nav>
         )}
       </header>
       <header className="fixed top-0 left-0 right-0 z-50 bg-[var(--background)] border-b border-[var(--border)] px-6 py-3 hidden md:flex">
         <nav className="flex items-center justify-between w-full max-w-6xl mx-auto">
-          <Link href="/" className="text-[var(--primary-text)] font-bold text-lg uppercase">
+          <Link href="/" className="text-[var(--primary-text)] text-xl font-bold">
             Crate Digger
           </Link>
           <ul className="flex space-x-6">
             <li>
               <Link href="/" className="text-[var(--primary-text)] hover:text-[var(--accent)] uppercase text-sm font-bold">
                 Home
-              </Link>
-            </li>
-            <li>
-              <Link href="/search" className="text-[var(--primary-text)] hover:text-[var(--accent)] uppercase text-sm font-bold">
-                Search
               </Link>
             </li>
           </ul>
@@ -83,9 +73,13 @@ export default function Layout({ children }) {
 
       {/* Main Content */}
       <main className="md:pl-64 pt-16 pb-4 px-6 flex justify-center">
-        <div className="max-w-6xl w-full">
-          {children}
-        </div>
+        {router.pathname === '/login' ? (
+          <>{children}</>
+        ) : (
+          <div className="max-w-6xl w-full">
+            {children}
+          </div>
+        )}
       </main>
     </div>
   );

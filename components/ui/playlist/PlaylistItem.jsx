@@ -1,10 +1,19 @@
 import Link from "next/link";
+import { useSetRecoilState } from "recoil";
+import { playlistState } from "../../../atoms/playlistAtom";
 
 const PlaylistItem = ({ playlist, color, isActive, onClick }) => {
+  const setPlaylist = useSetRecoilState(playlistState);
+
+  const handleClick = () => {
+    setPlaylist(playlist);
+    if (onClick) onClick();
+  };
+
   return (
     <div
       className={`flex flex-col cursor-pointer border border-[var(--border)] ${isActive ? 'border-[var(--accent)] border-2' : ''}`}
-      onClick={onClick}
+      onClick={handleClick}
     >
       <div className="relative group">
         <img
@@ -19,9 +28,9 @@ const PlaylistItem = ({ playlist, color, isActive, onClick }) => {
       <div className="p-4">
         <h3 className="text-[var(--primary-text)] font-bold text-base group-hover:text-[var(--accent)] transition-colors duration-200">{playlist.name}</h3>
         <p className="text-[var(--primary-text)] text-sm">{playlist.description || "No description available"}</p>
-        <Link href={`/album/${playlist.id}`} className="mt-2 inline-block text-[var(--primary-text)] text-sm font-bold border border-[var(--border)] px-3 py-1 hover:text-[var(--accent)] hover:border-[var(--accent)] transition-all duration-200">
-          View
-        </Link>
+        <button className="mt-2 inline-block text-[var(--primary-text)] text-sm font-bold border border-[var(--border)] px-3 py-1 hover:text-[var(--accent)] hover:border-[var(--accent)] transition-all duration-200" onClick={handleClick}>
+          Select Tracks
+        </button>
       </div>
     </div>
   );

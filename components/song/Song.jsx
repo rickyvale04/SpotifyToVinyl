@@ -117,56 +117,57 @@ const Song = ({ track, order }) => {
 
   return (
     <tr key={track.id} className="border-b border-[var(--border)] hover:bg-[var(--secondary-bg)]">
-      <td className="py-3 px-2">
-        <div className="flex items-center gap-3">
-          <div className="w-6 text-center text-[var(--primary-text)] opacity-70">
-            {order}
-          </div>
-          <div className="avatar">
-            <div className="w-10 h-10 border border-[var(--border)]">
-              <img
-                src={
-                  track.album.images?.[0]?.url || defaultRecord
-                }
-                alt="Track Artwork"
-              />
+      <td className="py-3 px-2" colSpan="5">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-center">
+          <div className="flex items-center gap-3 col-span-1 md:col-span-2">
+            <div className="w-6 text-center text-[var(--primary-text)] opacity-70">
+              {order}
+            </div>
+            <div className="avatar">
+              <div className="w-10 h-10 border border-[var(--border)]">
+                <img
+                  src={
+                    track.album.images?.[0]?.url || defaultRecord
+                  }
+                  alt="Track Artwork"
+                />
+              </div>
+            </div>
+            <div>
+              <div className="font-bold text-[var(--primary-text)]">{track.name}</div>
+              <div className="text-sm text-[var(--primary-text)] opacity-70">{track.artists[0].name}</div>
             </div>
           </div>
-          <div>
-            <div className="font-bold text-[var(--primary-text)]">{track.name}</div>
-            <div className="text-sm text-[var(--primary-text)] opacity-70">{track.artists[0].name}</div>
+          <div className="col-span-1 md:col-span-1">
+            <div className="text-[var(--primary-text)]">{track.album.name}</div>
+            <div className="text-xs text-[var(--primary-text)] opacity-70 mt-1">
+              Release Date: {track.album.release_date}
+            </div>
           </div>
+          <div className="flex justify-center col-span-1 md:col-span-1">
+            {vinyls.length > 0 ? (
+              <CheckIcon
+                className="w-6 h-6 text-[var(--accent)] cursor-pointer"
+                onClick={() => setShowVinyls(!showVinyls)}
+              />
+            ) : (
+              <XIcon className="w-6 h-6 text-[var(--primary-text)] opacity-50" />
+            )}
+          </div>
+          <div className="flex justify-center col-span-1 md:col-span-1">
+            <button
+              className="text-[var(--primary-text)] hover:text-[var(--accent)] text-sm font-bold border border-[var(--border)] px-3 py-1 rounded"
+              onClick={() =>
+                document.getElementById(`my_modal_${track.id}`).showModal()
+              }
+            >
+              Vinyl Details
+            </button>
+          </div>
+          {/* Removed Spotify Logo for better visibility */}
         </div>
       </td>
-      <td className="py-3 px-2">
-        <div className="text-[var(--primary-text)]">{track.album.name}</div>
-        <div className="text-xs text-[var(--primary-text)] opacity-70 mt-1">
-          Release Date: {track.album.release_date}
-        </div>
-      </td>
-      <td className="py-3 px-2">
-        <div className="flex justify-center">
-          {vinyls.length > 0 ? (
-            <CheckIcon
-              className="w-6 h-6 text-[var(--accent)] cursor-pointer"
-              onClick={() => setShowVinyls(!showVinyls)}
-            />
-          ) : (
-            <XIcon className="w-6 h-6 text-[var(--primary-text)] opacity-50" />
-          )}
-        </div>
-      </td>
-      <td className="py-3 px-2">
-        <div className="flex justify-center">
-          <button
-            className="text-[var(--primary-text)] hover:text-[var(--accent)] text-sm font-bold border border-[var(--border)] px-3 py-1 rounded"
-            onClick={() =>
-              document.getElementById(`my_modal_${track.id}`).showModal()
-            }
-          >
-            Vinyl Details
-          </button>
-        </div>
+      <td style={{ display: 'none' }}>
         <dialog id={`my_modal_${track.id}`} className="modal">
           <div className="modal-box w-full bg-[var(--background)] text-[var(--primary-text)]">
             <table className="table w-full">
@@ -215,20 +216,7 @@ const Song = ({ track, order }) => {
           </div>
         </dialog>
       </td>
-      <td className="py-3 px-2">
-        <a
-          href={track.external_urls.spotify}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex justify-center"
-        >
-          <img
-            className="w-8 p-1"
-            src="https://links.papareact.com/9xl"
-            alt="Spotify Logo"
-          />
-        </a>
-      </td>
+      {/* Removed Spotify Logo link for better visibility */}
     </tr>
   );
 };

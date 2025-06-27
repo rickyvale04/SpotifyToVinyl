@@ -38,3 +38,9 @@ p {
 .modal-box {
   max-width: fit-content;
 }
+
+@media (min-width: 768px) {
+  #__next > div > main.md\:pl-64 {
+    padding-left: 1rem;
+  }
+}

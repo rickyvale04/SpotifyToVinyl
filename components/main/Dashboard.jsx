@@ -4,40 +4,59 @@ import useSpotify from "../../hooks/useSpotify";
 import PlaylistGroup from "../ui/playlist/PlaylistGroup";
 import { useRecoilState } from "recoil";
 import { playlistState } from "../../atoms/playlistAtom";
+import Center from "./Center"; // Import Center component
 
 const Dashboard = () => {
-  // get spotify api
   const spotifyAPI = useSpotify();
-  // get session
   const { data: session, status } = useSession();
 
-  // local state for user and playlists
   const [localPlaylists, setLocalPlaylists] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [playlistRecoil, setPlaylistRecoil] = useRecoilState(playlistState);
 
-  // get user / playlists and set them to local storage
   useEffect(() => {
-    if (spotifyAPI.getAccessToken()) {
+    if (typeof window !== 'undefined' && spotifyAPI.getAccessToken()) {
+      setIsLoading(true);
       const localPlaylists = localStorage.getItem("playlists");
 
       if (localPlaylists) {
         const parsedPlaylists = JSON.parse(localPlaylists);
         setLocalPlaylists(parsedPlaylists);
         setPlaylistRecoil(parsedPlaylists);
+        setIsLoading(false);
       } else {
         spotifyAPI.getUserPlaylists().then((data) => {
           setLocalPlaylists(data.body.items);
           localStorage.setItem("playlists", JSON.stringify(data.body.items));
           setPlaylistRecoil(data.body.items);
+          setIsLoading(false);
+        }).catch((err) => {
+          console.error("Failed to fetch playlists:", err);
+          setIsLoading(false);
         });
       }
+    } else {
+      setIsLoading(false);
     }
+    return () => {
+      // Cleanup function to prevent memory leaks or unmount issues
+      setIsLoading(false);
+    };
   }, [session, spotifyAPI]);
 
   return (
     <div className="py-4">
       <h1 className="mb-6">Your Playlists</h1>
-      <PlaylistGroup playlists={localPlaylists} />
+      {isLoading ? (
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[var(--accent)]"></div>
+        </div>
+      ) : (
+        <>
+          <PlaylistGroup playlists={localPlaylists} />
+          <Center /> {/* Render Center component here */}
+        </>
+      )}
     </div>
   );
 };

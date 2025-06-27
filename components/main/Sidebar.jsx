@@ -16,6 +16,7 @@ function Sidebar() {
   const router = useRouter();
   const [isDiscogsLoggedIn, setIsDiscogsLoggedIn] = useState(false);
   const [isSpotifyLoggedIn, setIsSpotifyLoggedIn] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     if (!session) return;
@@ -80,13 +81,13 @@ function Sidebar() {
   };
 
   return (
-    <div className="p-6 text-[var(--primary-text)] text-sm md:text-base h-full overflow-y-auto">
+    <div className="p-6 bg-[var(--secondary-bg)] text-[var(--primary-text)] text-sm md:text-base h-full overflow-y-auto shadow-lg rounded-lg">
       <UserInfo user={localUser} />
       <div className="mt-6 space-y-4">
         {isSpotifyLoggedIn ? (
           <button
             onClick={handleSpotifyLogout}
-            className="w-full text-center px-4 py-3 text-[var(--primary-text)] hover:text-[var(--accent)] border border-[var(--border)] text-base font-bold bg-[var(--secondary-bg)] rounded"
+            className="w-full text-center px-4 py-4 text-[var(--primary-text)] hover:text-[var(--accent)] border border-[var(--border)] text-base font-bold bg-[var(--background)] rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-102"
           >
             Logout from Spotify
           </button>
@@ -102,7 +103,7 @@ function Sidebar() {
                 alert("Spotify authentication is not configured properly. Please contact support.");
               }
             }}
-            className="w-full text-center px-4 py-3 text-[var(--primary-text)] hover:text-[var(--accent)] border border-[var(--border)] text-base font-bold bg-[var(--secondary-bg)] rounded"
+            className="w-full text-center px-4 py-4 text-[var(--primary-text)] hover:text-[var(--accent)] border border-[var(--border)] text-base font-bold bg-[var(--background)] rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-102"
           >
             Login with Spotify
           </button>
@@ -110,7 +111,7 @@ function Sidebar() {
         {isDiscogsLoggedIn ? (
           <button
             onClick={handleDiscogsLogout}
-            className="w-full text-center px-4 py-3 text-[var(--primary-text)] hover:text-[var(--accent)] border border-[var(--border)] text-base font-bold bg-[var(--secondary-bg)] rounded"
+            className="w-full text-center px-4 py-4 text-[var(--primary-text)] hover:text-[var(--accent)] border border-[var(--border)] text-base font-bold bg-[var(--background)] rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-102"
           >
             Logout from Discogs
           </button>
@@ -132,7 +133,7 @@ function Sidebar() {
                 alert("Error initiating Discogs login. Please try again.");
               }
             }}
-            className="w-full text-center px-4 py-3 text-[var(--primary-text)] hover:text-[var(--accent)] border border-[var(--border)] text-base font-bold bg-[var(--secondary-bg)] rounded"
+            className="w-full text-center px-4 py-4 text-[var(--primary-text)] hover:text-[var(--accent)] border border-[var(--border)] text-base font-bold bg-[var(--background)] rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-102"
           >
             Login with Discogs
           </button>
@@ -152,20 +153,37 @@ function Sidebar() {
           <div className="flex items-center gap-2 px-2 py-1 cursor-pointer hover:text-[var(--accent)]">
             <LibraryIcon className="h-5 w-5" />
             <p className="font-bold text-sm">Your Playlists</p>
+            <input
+              type="text"
+              placeholder="Search playlists..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="text-[var(--primary-text)] bg-[var(--secondary-bg)] border border-[var(--border)] rounded px-3 py-1 text-sm w-24 md:w-32 focus:outline-none focus:ring-1 focus:ring-[var(--accent)]"
+            />
+            <button
+              onClick={() => alert("Add to Wantlist functionality will be implemented here.")}
+              className="ml-2 text-[var(--primary-text)] hover:text-[var(--accent)] border border-[var(--border)] rounded px-2 py-1 text-xs font-bold bg-[var(--secondary-bg)]"
+            >
+              Add to Wantlist
+            </button>
           </div>
           <div className="mt-2 text-xs pl-6">
             {localPlaylists && localPlaylists.length > 0 ? (
-              localPlaylists.map((playlist) => (
-                <div key={playlist.id} className="mb-1">
-                  <Link
-                    href={`/album/${playlist.id}`}
-                    className="block hover:text-[var(--accent)] truncate"
-                  >
-                    {playlist.name}
-                  </Link>
-                  <hr className="border-b border-[var(--border)] w-full mt-1" />
-                </div>
-              ))
+              localPlaylists
+                .filter((playlist) =>
+                  playlist.name.toLowerCase().includes(searchTerm.toLowerCase())
+                )
+                .map((playlist) => (
+                  <div key={playlist.id} className="mb-1">
+                    <Link
+                      href={`/album/${playlist.id}`}
+                      className="block hover:text-[var(--accent)] truncate"
+                    >
+                      {playlist.name}
+                    </Link>
+                    <hr className="border-b border-[var(--border)] w-full mt-1" />
+                  </div>
+                ))
             ) : (
               <p>No playlists found.</p>
             )}
