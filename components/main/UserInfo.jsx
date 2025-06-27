@@ -2,7 +2,7 @@ import { signOut } from "next-auth/react";
 
 const UserInfo = ({ user }) => {
   const { images, display_name, external_urls, followers } = user || {};
-  const profileImage = images?.[1]?.url || images?.[0]?.url || "";
+  const profileImage = images?.[1]?.url || images?.[0]?.url || "/favicon.ico";
   const spotifyProfile = external_urls?.spotify;
   const followerCount = followers?.total || 0;
 
@@ -22,12 +22,6 @@ const UserInfo = ({ user }) => {
         <p>Followers: {followerCount}</p>
       </div>
 
-      <button
-        className="btn btn-error mt-4"
-        onClick={() => signOut({ callbackUrl: "/login" })}
-      >
-        Log Out
-      </button>
     </div>
   );
 };

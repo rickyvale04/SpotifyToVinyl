@@ -79,7 +79,16 @@ function Sidebar() {
           </button>
         ) : (
           <button
-            onClick={() => router.push("/api/spotify/login")}
+            onClick={() => {
+              const clientId = process.env.NEXT_PUBLIC_CLIENT_ID;
+              if (clientId) {
+                const { redirectToAuthCodeFlow } = require("../../lib/spotifyAuth");
+                redirectToAuthCodeFlow(clientId);
+              } else {
+                console.error("Spotify Client ID is not defined. Please set NEXT_PUBLIC_CLIENT_ID in your environment variables.");
+                alert("Spotify authentication is not configured properly. Please contact support.");
+              }
+            }}
             className="w-full text-center px-4 py-3 text-[var(--primary-text)] hover:text-[var(--accent)] border border-[var(--border)] text-base font-bold bg-[var(--secondary-bg)] rounded"
           >
             Login with Spotify

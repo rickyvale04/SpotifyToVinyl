@@ -2,8 +2,8 @@ import { getTokens } from '../../../lib/spotifyNew';
 
 export default async function handler(req, res) {
   const { code, code_verifier } = req.query;
-  const host = req.headers.host || '127.0.0.1:3000';
-  const redirectUri = `http://${host}/api/spotify/callback`;
+  const host = req.headers.host || '127.0.0.1:3002';
+  const redirectUri = `http://${host}/callback`;
 
   if (!code) {
     return res.status(400).json({ error: 'Authorization code is required' });
