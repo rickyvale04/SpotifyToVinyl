@@ -16,7 +16,7 @@ const SongTable = ({ playlistID }) => {
   // Fetch playlist when component mounts or playlistID changes
   useEffect(() => {
     // Only set loading state after component mounts on client side
-    if (typeof window !== 'undefined' && spotifyAPI.getAccessToken() && playlistID) {
+    if (typeof window !== 'undefined' && spotifyAPI && spotifyAPI.getAccessToken && spotifyAPI.getAccessToken() && playlistID) {
       setIsLoading(true);
       spotifyAPI
         .getPlaylist(playlistID)
@@ -29,12 +29,10 @@ const SongTable = ({ playlistID }) => {
           setError("Failed to load playlist. Please try again.");
           setIsLoading(false);
         });
-    }
-    return () => {
-      // Cleanup function to prevent memory leaks or unmount issues
+    } else if (spotifyAPI === null || !playlistID) {
       setIsLoading(false);
-    };
-  }, [spotifyAPI, playlistID]);
+    }
+  }, [spotifyAPI, playlistID, setCurrentPlaylist]);
 
   // Pagination state and logic
   const itemsPerPage = 10;

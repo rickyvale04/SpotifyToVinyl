@@ -11,7 +11,7 @@ export default function App({
     <SessionProvider session={session}>
       <RecoilRoot>
         <Layout>
-        <Component {...pageProps} />
+          <Component {...pageProps} />
         </Layout>
       </RecoilRoot>
     </SessionProvider>

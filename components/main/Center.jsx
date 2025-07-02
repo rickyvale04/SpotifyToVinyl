@@ -28,25 +28,45 @@ const Center = () => {
   
   const [color, setColor] = useState(null);
   const [user, setUser] = useState(null);
+  const [isClient, setIsClient] = useState(false);
   const playlistID = useRecoilValue(playlistIdState);
   const [playlist, setPlaylist] = useRecoilState(playlistState);
   
-  const fetchData = async () => {
-    if (spotifyAPI.getAccessToken()) {
-      try {
-        setUser((await spotifyAPI.getMe()).body);
-        setPlaylist((await spotifyAPI.getPlaylist(playlistID)).body);
-      } catch (err) {
-        console.error('Error fetching data from Spotify:', err);
-      }
-    }
-  };
-
-  useEffect(fetchData, [session, spotifyAPI, playlistID]);
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   useEffect(() => {
-    setColor(shuffle(colors).pop());
-  }, [playlistID]);
+    if (!isClient || !spotifyAPI || !playlistID) {
+      return;
+    }
+
+    const fetchData = async () => {
+      if (spotifyAPI && spotifyAPI.getAccessToken && spotifyAPI.getAccessToken()) {
+        try {
+          const userResponse = await spotifyAPI.getMe();
+          setUser(userResponse.body);
+          
+          const playlistResponse = await spotifyAPI.getPlaylist(playlistID);
+          setPlaylist(playlistResponse.body);
+        } catch (err) {
+          console.error('Error fetching data from Spotify:', err);
+        }
+      }
+    };
+
+    fetchData();
+  }, [session, spotifyAPI, playlistID, isClient, setPlaylist]);
+
+  useEffect(() => {
+    if (isClient && playlistID) {
+      setColor(shuffle(colors).pop());
+    }
+  }, [playlistID, isClient]);
+
+  if (!isClient) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className='flex-grow h-screen w-screen overflow-y-scroll scrollbar-hide'>
@@ -66,4 +86,3 @@ const Center = () => {
 };
 
 export default Center;
-

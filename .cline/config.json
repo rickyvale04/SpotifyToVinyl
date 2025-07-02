@@ -1,0 +1,5 @@
+{
+  "memory": {
+    "globs": ["memory-bank/**/*.md"]
+  }
+}

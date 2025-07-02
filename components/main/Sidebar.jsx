@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import { playlistState, userState } from "../../atoms/playlistAtom";
-import { useSession } from "next-auth/react";
+import { useSession, signIn } from "next-auth/react";
 import useSpotify from "../../hooks/useSpotify";
 
 function Sidebar() {
@@ -93,16 +93,7 @@ function Sidebar() {
           </button>
         ) : (
           <button
-            onClick={() => {
-              const clientId = process.env.NEXT_PUBLIC_CLIENT_ID;
-              if (clientId) {
-                const { redirectToAuthCodeFlow } = require("../../lib/spotifyAuth");
-                redirectToAuthCodeFlow(clientId);
-              } else {
-                console.error("Spotify Client ID is not defined. Please set NEXT_PUBLIC_CLIENT_ID in your environment variables.");
-                alert("Spotify authentication is not configured properly. Please contact support.");
-              }
-            }}
+            onClick={() => signIn('spotify', { callbackUrl: '/' })}
             className="w-full text-center px-4 py-4 text-[var(--primary-text)] hover:text-[var(--accent)] border border-[var(--border)] text-base font-bold bg-[var(--background)] rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-102"
           >
             Login with Spotify
@@ -122,7 +113,11 @@ function Sidebar() {
                 const response = await fetch("/api/discogs/login");
                 const data = await response.json();
                 if (data.authorizeUrl) {
-                  // Redirect to Discogs authorization page
+                  // Store requestToken and requestTokenSecret in localStorage if provided
+                  if (data.requestToken && data.requestTokenSecret) {
+                    localStorage.setItem('discogs_request_token', data.requestToken);
+                    localStorage.setItem('discogs_request_token_secret', data.requestTokenSecret);
+                  }
                   window.location.href = data.authorizeUrl;
                 } else {
                   console.error("Failed to get Discogs login URL", data.error);

@@ -13,36 +13,48 @@ const Dashboard = () => {
   const [localPlaylists, setLocalPlaylists] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [playlistRecoil, setPlaylistRecoil] = useRecoilState(playlistState);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && spotifyAPI.getAccessToken()) {
-      setIsLoading(true);
-      const localPlaylists = localStorage.getItem("playlists");
+    setIsClient(true);
+  }, []);
 
-      if (localPlaylists) {
-        const parsedPlaylists = JSON.parse(localPlaylists);
-        setLocalPlaylists(parsedPlaylists);
-        setPlaylistRecoil(parsedPlaylists);
+  useEffect(() => {
+    if (!isClient || !spotifyAPI) {
+      setIsLoading(false);
+      return;
+    }
+
+    if (spotifyAPI && spotifyAPI.getAccessToken && spotifyAPI.getAccessToken()) {
+      setIsLoading(true);
+      
+      try {
+        const localPlaylists = localStorage.getItem("playlists");
+
+        if (localPlaylists) {
+          const parsedPlaylists = JSON.parse(localPlaylists);
+          setLocalPlaylists(parsedPlaylists);
+          setPlaylistRecoil(parsedPlaylists);
+          setIsLoading(false);
+        } else {
+          spotifyAPI.getUserPlaylists().then((data) => {
+            setLocalPlaylists(data.body.items);
+            localStorage.setItem("playlists", JSON.stringify(data.body.items));
+            setPlaylistRecoil(data.body.items);
+            setIsLoading(false);
+          }).catch((err) => {
+            console.error("Failed to fetch playlists:", err);
+            setIsLoading(false);
+          });
+        }
+      } catch (error) {
+        console.error("Error accessing localStorage:", error);
         setIsLoading(false);
-      } else {
-        spotifyAPI.getUserPlaylists().then((data) => {
-          setLocalPlaylists(data.body.items);
-          localStorage.setItem("playlists", JSON.stringify(data.body.items));
-          setPlaylistRecoil(data.body.items);
-          setIsLoading(false);
-        }).catch((err) => {
-          console.error("Failed to fetch playlists:", err);
-          setIsLoading(false);
-        });
       }
     } else {
       setIsLoading(false);
     }
-    return () => {
-      // Cleanup function to prevent memory leaks or unmount issues
-      setIsLoading(false);
-    };
-  }, [session, spotifyAPI]);
+  }, [session, spotifyAPI, isClient, setPlaylistRecoil]);
 
   return (
     <div className="py-4">

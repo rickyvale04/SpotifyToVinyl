@@ -17,7 +17,7 @@ const Songs = () => {
   
   // Pagination
   const itemsPerPage = 10;
-  const totalPages = Math.ceil((playlist?.tracks?.items.length || 0) / itemsPerPage);
+  const totalPages = Math.ceil((playlist?.tracks?.items?.length || 0) / itemsPerPage);
   const [currentPage, setCurrentPage] = useState(1);
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);

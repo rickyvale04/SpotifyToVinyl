@@ -6,11 +6,10 @@ export default async function handler(req, res) {
   
   try {
     const { authorizeUrl, requestToken, requestTokenSecret } = await getLoginUrl(redirectUri);
-    // Store the requestTokenSecret in server-side token store
+    // Attempt to store the requestTokenSecret in server-side token store
     const stored = storeRequestTokenSecret(requestToken, requestTokenSecret);
     if (!stored) {
-      console.error('Failed to store request token secret on server');
-      return res.status(500).json({ error: 'Failed to store token secret on server' });
+      console.warn('Failed to store request token secret on server, proceeding anyway');
     }
     // Return the authorization URL and token details to the client
     res.status(200).json({

@@ -1,9 +1,5 @@
-import { getLoginUrl } from '../../../lib/spotifyNew';
-
+// Spotify integration has been removed as per user request.
+// This file is kept as a placeholder for potential future implementations.
 export default function handler(req, res) {
-  const redirectUri = 'http://127.0.0.1:3001/api/auth/spotify/callback';
-  
-  const loginUrl = getLoginUrl(redirectUri);
-  res.writeHead(302, { Location: loginUrl });
-  res.end();
+  res.status(200).json({ message: 'Spotify authentication has been removed from the project.' });
 }
