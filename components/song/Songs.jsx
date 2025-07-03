@@ -4,29 +4,28 @@ import { useRecoilValue } from 'recoil';
 import Song from './Song';
 import PageButton from '../ui/buttons/PageButton';
 
-const Songs = () => {
+const Songs = ({ tracks = [] }) => {
 
-  // Get current playlist
-  const playlist = useRecoilValue(playlistState);
-  const getCurrentPlaylist = () => {
-    if (!playlist || !playlist.tracks || !playlist.tracks.items) return [];
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    return playlist?.tracks?.items.slice(startIndex, endIndex);
-  };
-  
   // Pagination
   const itemsPerPage = 10;
-  const totalPages = Math.ceil((playlist?.tracks?.items?.length || 0) / itemsPerPage);
   const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = Math.ceil((tracks?.length || 0) / itemsPerPage);
+
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
 
+  const getCurrentTracks = () => {
+    if (!tracks) return [];
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return tracks.slice(startIndex, endIndex);
+  };
+
   return (
     <div className='flex flex-col space-y-2 pb-12 text-[var(--primary-text)]'>
-        {getCurrentPlaylist().length > 0 ? (
-          getCurrentPlaylist().map((track, i) => (
+        {getCurrentTracks().length > 0 ? (
+          getCurrentTracks().map((track, i) => (
             <Song key={track.track.id} order={i + 1 + (currentPage - 1) * itemsPerPage} track={track.track} />
           ))
         ) : (

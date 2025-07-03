@@ -6,10 +6,4 @@ const playlistState = atom({
     default: []
 })
 
-// Define atom for user state
-const userState = atom({
-    key: "userState",
-    default: []
-})
-
-export { playlistState, userState }
+export { playlistState }

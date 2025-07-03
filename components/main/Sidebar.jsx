@@ -4,7 +4,8 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
-import { playlistState, userState } from "../../atoms/playlistAtom";
+import { playlistState } from "../../atoms/playlistAtom";
+import { userState } from "../../atoms/userAtom";
 import { useSession, signIn } from "next-auth/react";
 import useSpotify from "../../hooks/useSpotify";
 

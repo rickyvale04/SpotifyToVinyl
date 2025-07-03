@@ -31,6 +31,7 @@ const Center = () => {
   const [isClient, setIsClient] = useState(false);
   const playlistID = useRecoilValue(playlistIdState);
   const [playlist, setPlaylist] = useRecoilState(playlistState);
+  const [tracks, setTracks] = useState([]);
   
   useEffect(() => {
     setIsClient(true);
@@ -49,6 +50,9 @@ const Center = () => {
           
           const playlistResponse = await spotifyAPI.getPlaylist(playlistID);
           setPlaylist(playlistResponse.body);
+
+          const tracksResponse = await spotifyAPI.getPlaylistTracks(playlistID);
+          setTracks(tracksResponse.body.items);
         } catch (err) {
           console.error('Error fetching data from Spotify:', err);
         }
@@ -79,7 +83,7 @@ const Center = () => {
         </div>
       </section>
       <div>
-        <Songs />
+        <Songs tracks={tracks} />
       </div>
     </div>
   );

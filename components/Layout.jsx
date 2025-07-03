@@ -67,9 +67,11 @@ export default function Layout({ children }) {
       </header>
 
       {/* Sidebar for desktop */}
-      <aside className="hidden md:block w-64 bg-[var(--background)] border-r border-[var(--border)] pt-16 pb-4 overflow-y-auto">
-        <Sidebar />
-      </aside>
+      {router.pathname !== '/login' && (
+        <aside className="hidden md:block w-64 bg-[var(--background)] border-r border-[var(--border)] pt-16 pb-4 overflow-y-auto">
+          <Sidebar />
+        </aside>
+      )}
 
       {/* Main Content */}
       <main className="md:pl-64 pt-16 pb-4 px-6 flex justify-center">

@@ -58,16 +58,23 @@ const Dashboard = () => {
 
   return (
     <div className="py-4">
-      <h1 className="mb-6">Your Playlists</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="">Your Playlists</h1>
+      </div>
+
       {isLoading ? (
         <div className="flex justify-center items-center h-64">
           <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[var(--accent)]"></div>
         </div>
       ) : (
-        <>
-          <PlaylistGroup playlists={localPlaylists} />
-          <Center /> {/* Render Center component here */}
-        </>
+        <div className="flex">
+          <div className="w-1/2">
+            <PlaylistGroup playlists={localPlaylists} />
+          </div>
+          <div className="w-1/2">
+            <Center />
+          </div>
+        </div>
       )}
     </div>
   );
