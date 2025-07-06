@@ -2,6 +2,7 @@ import axios from 'axios';
 
 
 export default async function handler(req, res) {
+  console.log('discogsSearch req.query:', req.query);
   const { q, track, key, secret } = req.query;
   const targetUrl = `https://api.discogs.com/database/search?q=${q}&track=${track}&format=vinyl&key=${key}&secret=${secret}`;
 

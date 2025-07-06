@@ -1,9 +1,7 @@
-import { atom } from "recoil"
+import { atom } from "recoil";
 
-// Define atom for playlist state
-const playlistState = atom({
+export const playlistState = atom({
     key: "playlistState",
-    default: []
-})
+    default: [],
+});
 
-export { playlistState }

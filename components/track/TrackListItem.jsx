@@ -1,41 +1,100 @@
-import React from 'react';
+import { useState } from 'react';
+import { PlayIcon, PauseIcon, PlusIcon, CheckIcon } from '@heroicons/react/outline';
 
-const TrackListItem = ({ track, onSelect, onPreview, isSelected }) => {
+const TrackListItem = ({ track, index, isSelected = false, onToggleSelect }) => {
+  const [isHovered, setIsHovered] = useState(false);
+
+  if (!track) return null;
+
+  const handleToggleSelect = () => {
+    if (onToggleSelect) {
+      onToggleSelect(!isSelected);
+    }
+  };
+
   return (
-    <div
-      className={`flex items-center p-2 cursor-pointer ${isSelected ? 'bg-blue-100' : 'hover:bg-gray-100'}`}
-      onClick={() => onSelect(track)}
+    <div 
+      className="grid grid-cols-12 gap-4 px-4 py-3 hover:bg-gray-50 transition-colors duration-200 border-b border-gray-100 group"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Album Art */}
-      <img src="https://via.placeholder.com/150" alt={track.title} className="h-12 w-12 mr-4 rounded" />
-
-      {/* Track Info */}
-      <div className="flex-grow">
-        <p className="font-semibold text-gray-800">{track.title}</p>
-        <p className="text-sm text-gray-500">{track.artist} - {track.album}</p>
+      {/* Track Number / Play Button */}
+      <div className="col-span-1 flex items-center">
+        <div className="w-8 h-8 flex items-center justify-center">
+          {isHovered ? (
+            <PlayIcon className="h-4 w-4 text-black cursor-pointer hover:scale-110 transition-transform" />
+          ) : (
+            <span className="text-sm text-gray-500 font-medium">{index}</span>
+          )}
+        </div>
       </div>
 
-      {/* Duration and Preview */}
-      <div className="flex items-center space-x-4">
-        <p className="text-sm text-gray-500">{track.duration}</p>
-        <button onClick={(e) => { e.stopPropagation(); onPreview(track); }} className="p-2">
-          {/* Play Icon */}
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
+      {/* Track Info */}
+      <div className="col-span-6 flex items-center space-x-3">
+        <div className="w-12 h-12 bg-gray-200 flex-shrink-0 overflow-hidden">
+          {track.album?.images?.[0]?.url ? (
+            <img
+              src={track.album.images[0].url}
+              alt={track.album.name}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full bg-black flex items-center justify-center">
+              <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9 19V6l12-3v13M9 19c0 1.105-1.895 2-4 2s-4-.895-4-2 1.895-2 4-2 4 .895 4 2zm12-3c0 1.105-1.895 2-4 2s-4-.895-4-2 1.895-2 4-2 4 .895 4 2zM9 10l12-3"/>
+              </svg>
+            </div>
+          )}
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-black text-sm font-medium truncate group-hover:text-gray-700 transition-colors">
+            {track.name}
+          </p>
+          <p className="text-gray-600 text-xs truncate">
+            {track.artists?.map(artist => artist.name).join(', ')}
+          </p>
+        </div>
+      </div>
+
+      {/* Album */}
+      <div className="col-span-3 flex items-center">
+        <p className="text-gray-600 text-sm truncate">
+          {track.album?.name}
+        </p>
+      </div>
+
+      {/* Duration & Actions */}
+      <div className="col-span-2 flex items-center justify-between">
+        <span className="text-gray-600 text-sm">
+          {millisToMinutesAndSeconds(track.duration_ms)}
+        </span>
+        
+        {/* Selection Button */}
+        <button
+          onClick={handleToggleSelect}
+          className={`ml-2 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
+            isSelected 
+              ? 'bg-black border-black' 
+              : 'border-gray-300 hover:border-black'
+          } ${isHovered ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
+        >
+          {isSelected ? (
+            <CheckIcon className="h-3 w-3 text-white" />
+          ) : (
+            <PlusIcon className="h-3 w-3 text-gray-600" />
+          )}
         </button>
-        {isSelected && (
-          <div className="text-blue-500">
-            {/* Checkmark Icon */}
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-          </div>
-        )}
       </div>
     </div>
   );
 };
+
+function millisToMinutesAndSeconds(millis) {
+  const minutes = Math.floor(millis / 60000);
+  const seconds = ((millis % 60000) / 1000).toFixed(0);
+  return seconds == 60
+    ? minutes + 1 + ":00"
+    : minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+}
 
 export default TrackListItem;

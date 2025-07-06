@@ -42,8 +42,8 @@ const generateOAuthSignature = (method, url, params, consumerSecret, tokenSecret
 
 // Get request token for initiating authentication
 export const getRequestToken = async (callbackUrl) => {
-  const consumerKey = process.env.NEXT_PUBLIC_DISC_ID;
-  const consumerSecret = process.env.NEXT_PUBLIC_DISC_SECRET;
+  const consumerKey = process.env.NEXT_PUBLIC_DISC_ID || process.env.DISCOGS_CONSUMER_KEY;
+  const consumerSecret = process.env.NEXT_PUBLIC_DISC_SECRET || process.env.DISCOGS_CONSUMER_SECRET;
   const timestamp = Math.floor(Date.now() / 1000).toString();
   const nonce = generateNonce();
   
@@ -95,8 +95,8 @@ export const getLoginUrl = async (callbackUrl) => {
 
 // Exchange request token for access token
 export const getAccessToken = async (requestToken, requestTokenSecret, verifier) => {
-  const consumerKey = process.env.NEXT_PUBLIC_DISC_ID;
-  const consumerSecret = process.env.NEXT_PUBLIC_DISC_SECRET;
+  const consumerKey = process.env.NEXT_PUBLIC_DISC_ID || process.env.DISCOGS_CONSUMER_KEY;
+  const consumerSecret = process.env.NEXT_PUBLIC_DISC_SECRET || process.env.DISCOGS_CONSUMER_SECRET;
   const timestamp = Math.floor(Date.now() / 1000).toString();
   const nonce = generateNonce();
   
@@ -208,6 +208,17 @@ export const makeDiscogsRequest = async (endpoint, accessToken, accessTokenSecre
     return response.data;
   } catch (error) {
     console.error(`Error making Discogs API request to ${endpoint}:`, error);
+    throw error;
+  }
+};
+
+// Get user information from Discogs
+export const getUserInfo = async (accessToken, accessTokenSecret) => {
+  try {
+    const userInfo = await makeDiscogsRequest('oauth/identity', accessToken, accessTokenSecret);
+    return userInfo;
+  } catch (error) {
+    console.error('Error getting user info from Discogs:', error);
     throw error;
   }
 };
