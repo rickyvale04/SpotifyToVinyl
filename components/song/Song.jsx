@@ -3,16 +3,19 @@ import { CheckIcon, XIcon } from "@heroicons/react/outline";
 import axios from "axios";
 import { useState, useEffect, useRef } from "react";
 import VinylItem from "../main/VinylItem";
+import { useDiscogsWantlist } from "../../hooks/useDiscogsWantlist";
 import defaultRecord from "../../public/recordImage.png";
 
 const Song = ({ track, order }) => {
   const spotifyAPI = useSpotify();
+  const { addToWantlist, loading: wantlistLoading, isLoggedIn } = useDiscogsWantlist();
   const itemsPerPage = 5;
 
   const [currentPage, setCurrentPage] = useState(1);
   const [vinyls, setVinyls] = useState([]);
   const [showVinyls, setShowVinyls] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [addingToWantlist, setAddingToWantlist] = useState(false);
   const vinylsRef = useRef(null);
 
   const totalPages = Math.ceil(vinyls.length / itemsPerPage);
@@ -25,6 +28,48 @@ const Song = ({ track, order }) => {
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
+  };
+
+  const handleAddToWantlist = async () => {
+    if (!isLoggedIn) {
+      alert("Please log in to Discogs to add items to your wantlist.");
+      return;
+    }
+
+    if (vinyls.length === 0) {
+      alert("No vinyl records found for this track.");
+      return;
+    }
+
+    // Add the first vinyl found to wantlist
+    const firstVinyl = vinyls[0];
+    if (!firstVinyl.id) {
+      alert("Unable to add this item - missing release ID.");
+      return;
+    }
+
+    setAddingToWantlist(true);
+    try {
+      await addToWantlist(firstVinyl.id);
+      
+      // Show success message
+      const successMessage = document.createElement('div');
+      successMessage.className = 'fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded shadow-lg z-50';
+      successMessage.textContent = 'Added to Discogs wantlist!';
+      document.body.appendChild(successMessage);
+      
+      setTimeout(() => {
+        if (document.body.contains(successMessage)) {
+          document.body.removeChild(successMessage);
+        }
+      }, 3000);
+      
+    } catch (error) {
+      console.error('Error adding to wantlist:', error);
+      alert(`Failed to add to wantlist: ${error.message}`);
+    } finally {
+      setAddingToWantlist(false);
+    }
   };
 
   function songHasVinyl(track) {
@@ -172,6 +217,22 @@ const Song = ({ track, order }) => {
             <XIcon className="w-5 h-5 text-gray-500" />
             <span className="text-xs text-gray-500">Not found</span>
           </div>
+        )}
+        
+        {vinyls.length > 0 && (
+          <button
+            onClick={handleAddToWantlist}
+            disabled={addingToWantlist || !isLoggedIn}
+            className={`text-xs px-3 py-1 transition-colors duration-200 ${
+              addingToWantlist
+                ? 'text-gray-500 border border-gray-500 cursor-not-allowed'
+                : isLoggedIn
+                ? 'text-gray-400 hover:text-white border border-gray-600 hover:border-gray-400'
+                : 'text-gray-600 border border-gray-700 cursor-not-allowed'
+            }`}
+          >
+            {addingToWantlist ? 'Adding...' : 'Add to Wantlist'}
+          </button>
         )}
         
         <button

@@ -37,8 +37,9 @@ export const useDiscogsWantlist = () => {
       const tokens = JSON.parse(tokensString || '{}');
       console.log('Parsed tokens:', tokens);
       
-      if (!tokens.access_token || !tokens.access_token_secret) {
-        console.log('Missing tokens - access_token:', !!tokens.access_token, 'access_token_secret:', !!tokens.access_token_secret);
+
+      if (!tokens.access_token || !tokens.access_token_secret || !tokens.username) {
+        console.log('Missing tokens or username - access_token:', !!tokens.access_token, 'access_token_secret:', !!tokens.access_token_secret, 'username:', !!tokens.username);
         throw new Error('Please log in to Discogs first');
       }
 
@@ -50,6 +51,7 @@ export const useDiscogsWantlist = () => {
         body: JSON.stringify({
           releaseId,
           tokens,
+          username: tokens.username,
         }),
       });
 

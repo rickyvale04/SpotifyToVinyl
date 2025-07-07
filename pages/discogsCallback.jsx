@@ -24,23 +24,25 @@ const DiscogsCallback = () => {
         access_token_secret: accessTokenSecret
       };
       
-      localStorage.setItem("discogs_tokens", JSON.stringify(tokens));
-      
-      // Update Recoil state
-      setDiscogsToken(tokens);
-      
-      // Fetch user info
+      // Fetch user info to get username
+      let username = null;
       try {
         const userResponse = await fetch(`/api/discogs/user?access_token=${accessToken}&access_token_secret=${accessTokenSecret}`);
         if (userResponse.ok) {
           const userData = await userResponse.json();
           setDiscogsUser(userData);
+          username = userData.username;
         }
       } catch (userError) {
         console.error('Error fetching user info:', userError);
         // Continue even if user info fails
       }
-
+      if (username) {
+        tokens.username = username;
+      }
+      localStorage.setItem("discogs_tokens", JSON.stringify(tokens));
+      // Update Recoil state
+      setDiscogsToken(tokens);
       setMessage("Discogs authentication successful! Redirecting to dashboard...");
       setTimeout(() => {
         router.push("/");
