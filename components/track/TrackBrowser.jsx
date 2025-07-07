@@ -64,27 +64,27 @@ const TrackBrowser = () => {
 
   if (!selectedPlaylist) {
     return (
-      <div className="flex-grow h-screen bg-white flex items-center justify-center">
-        <p className="text-gray-600">No playlist selected</p>
+      <div className="flex-grow h-screen bg-black flex items-center justify-center">
+        <p className="text-gray-400">No playlist selected</p>
       </div>
     );
   }
 
   return (
-    <div className="flex-grow min-h-screen bg-white">
+    <div className="flex-grow min-h-screen bg-black text-white">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
+      <div className="bg-black border-b border-gray-800 sticky top-0 z-10 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between mb-6">
             <button
               onClick={() => router.back()}
-              className="flex items-center space-x-2 text-gray-600 hover:text-black transition-colors duration-200"
+              className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors duration-200 group"
             >
-              <ChevronLeftIcon className="h-5 w-5" />
+              <ChevronLeftIcon className="h-5 w-5 group-hover:transform group-hover:-translate-x-1 transition-transform duration-200" />
               <span className="text-sm font-medium">Back to Playlists</span>
             </button>
             <div className="text-center">
-              <h1 className="text-black text-xl font-medium">Track Selection</h1>
+              <h1 className="text-white text-xl font-medium">Track Selection</h1>
               <p className="text-gray-500 text-xs mt-1">Choose tracks to find on vinyl</p>
             </div>
             <div className="w-32" /> {/* Spacer */}
@@ -92,7 +92,7 @@ const TrackBrowser = () => {
 
           {/* Playlist Info */}
           <div className="flex items-start space-x-8 mb-8">
-            <div className="w-32 h-32 bg-gray-200 flex-shrink-0 overflow-hidden shadow-lg">
+            <div className="w-32 h-32 bg-gray-900 flex-shrink-0 overflow-hidden shadow-lg border border-gray-800">
               {selectedPlaylist.images?.[0]?.url ? (
                 <img
                   src={selectedPlaylist.images[0].url}
@@ -100,8 +100,8 @@ const TrackBrowser = () => {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <div className="w-full h-full bg-black flex items-center justify-center">
-                  <svg className="w-16 h-16 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <div className="w-full h-full bg-gray-900 flex items-center justify-center">
+                  <svg className="w-16 h-16 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M9 19V6l12-3v13M9 19c0 1.105-1.895 2-4 2s-4-.895-4-2 1.895-2 4-2 4 .895 4 2zm12-3c0 1.105-1.895 2-4 2s-4-.895-4-2 1.895-2 4-2 4 .895 4 2zM9 10l12-3"/>
                   </svg>
                 </div>
@@ -111,15 +111,15 @@ const TrackBrowser = () => {
             <div className="flex-1 min-w-0">
               <div className="mb-4">
                 <p className="text-gray-500 text-xs font-medium uppercase tracking-wide mb-2">PLAYLIST</p>
-                <h2 className="text-black text-3xl font-medium truncate mb-3">{selectedPlaylist.name}</h2>
+                <h2 className="text-white text-3xl font-medium truncate mb-3">{selectedPlaylist.name}</h2>
                 {selectedPlaylist.description && (
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-2 leading-relaxed">
+                  <p className="text-gray-400 text-sm mb-4 line-clamp-2 leading-relaxed">
                     {selectedPlaylist.description}
                   </p>
                 )}
               </div>
               
-              <div className="flex items-center space-x-8 text-sm text-gray-600">
+              <div className="flex items-center space-x-8 text-sm text-gray-400">
                 <span className="flex items-center space-x-2">
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd"/>
@@ -153,37 +153,37 @@ const TrackBrowser = () => {
 
           {/* Stats Bar */}
           <div className="grid grid-cols-4 gap-6 mb-8">
-            <div className="bg-gray-50 border border-gray-200 p-6 text-center hover:bg-gray-100 transition-colors duration-200">
-              <p className="text-3xl font-medium text-black mb-1">{tracks.length}</p>
-              <p className="text-xs text-gray-600 uppercase tracking-wide">Total Tracks</p>
+            <div className="bg-gray-900 border border-gray-800 p-6 text-center hover:bg-gray-800 transition-colors duration-200">
+              <p className="text-3xl font-medium text-white mb-1">{tracks.length}</p>
+              <p className="text-xs text-gray-400 uppercase tracking-wide">Total Tracks</p>
             </div>
-            <div className="bg-gray-50 border border-gray-200 p-6 text-center hover:bg-gray-100 transition-colors duration-200">
-              <p className="text-3xl font-medium text-black mb-1">{selectedTracks.length}</p>
-              <p className="text-xs text-gray-600 uppercase tracking-wide">Selected</p>
+            <div className="bg-gray-900 border border-gray-800 p-6 text-center hover:bg-gray-800 transition-colors duration-200">
+              <p className="text-3xl font-medium text-white mb-1">{selectedTracks.length}</p>
+              <p className="text-xs text-gray-400 uppercase tracking-wide">Selected</p>
             </div>
-            <div className="bg-gray-50 border border-gray-200 p-6 text-center hover:bg-gray-100 transition-colors duration-200">
-              <p className="text-3xl font-medium text-black mb-1">
+            <div className="bg-gray-900 border border-gray-800 p-6 text-center hover:bg-gray-800 transition-colors duration-200">
+              <p className="text-3xl font-medium text-white mb-1">
                 {Math.round(tracks.reduce((total, item) => total + (item.track?.duration_ms || 0), 0) / 60000)}
               </p>
-              <p className="text-xs text-gray-600 uppercase tracking-wide">Minutes</p>
+              <p className="text-xs text-gray-400 uppercase tracking-wide">Minutes</p>
             </div>
-            <div className="bg-gray-50 border border-gray-200 p-6 text-center hover:bg-gray-100 transition-colors duration-200">
-              <p className="text-3xl font-medium text-black mb-1">
+            <div className="bg-gray-900 border border-gray-800 p-6 text-center hover:bg-gray-800 transition-colors duration-200">
+              <p className="text-3xl font-medium text-white mb-1">
                 {new Set(tracks.map(item => item.track?.artists?.[0]?.name)).size}
               </p>
-              <p className="text-xs text-gray-600 uppercase tracking-wide">Artists</p>
+              <p className="text-xs text-gray-400 uppercase tracking-wide">Artists</p>
             </div>
           </div>
 
           {/* Search Bar */}
           <div className="relative max-w-md">
-            <SearchIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <SearchIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
             <input
               type="text"
               placeholder="Search tracks, artists, or albums..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 border border-gray-300 bg-white text-black text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all duration-200"
+              className="w-full pl-12 pr-4 py-3 border border-gray-700 bg-gray-900 text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent transition-all duration-200 hover:bg-gray-800"
             />
           </div>
         </div>
@@ -194,9 +194,9 @@ const TrackBrowser = () => {
         {loading ? (
           <div className="flex items-center justify-center py-20">
             <div className="flex flex-col items-center space-y-4">
-              <div className="w-8 h-8 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+              <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
               <div className="text-center">
-                <p className="text-sm text-gray-600">Loading tracks...</p>
+                <p className="text-sm text-gray-400">Loading tracks...</p>
                 <p className="text-xs text-gray-500 mt-1">Please wait while we fetch your playlist</p>
               </div>
             </div>
@@ -206,22 +206,22 @@ const TrackBrowser = () => {
             {/* Results Summary */}
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center space-x-4">
-                <h3 className="text-lg font-medium text-black">
+                <h3 className="text-lg font-medium text-white">
                   {searchTerm ? `Search Results` : 'All Tracks'}
                 </h3>
-                <span className="bg-gray-100 text-gray-600 px-3 py-1 text-sm font-medium">
+                <span className="bg-gray-900 text-gray-400 px-3 py-1 text-sm font-medium border border-gray-800">
                   {filteredTracks?.length || 0} tracks
                 </span>
               </div>
               
               {selectedTracks.length > 0 && (
                 <div className="flex items-center space-x-4">
-                  <span className="text-sm text-gray-600">
+                  <span className="text-sm text-gray-400">
                     {selectedTracks.length} selected
                   </span>
                   <button
                     onClick={handleClearSelection}
-                    className="text-sm text-gray-600 hover:text-black border border-gray-300 hover:border-black px-3 py-1 transition-colors duration-200"
+                    className="text-sm text-gray-400 hover:text-white border border-gray-700 hover:border-white px-3 py-1 transition-colors duration-200"
                   >
                     Clear Selection
                   </button>
@@ -230,10 +230,10 @@ const TrackBrowser = () => {
             </div>
 
             {/* Track List */}
-            <div className="bg-white border border-gray-200 overflow-hidden">
+            <div className="bg-gray-900 border border-gray-800 overflow-hidden">
               {/* Track List Header */}
-              <div className="bg-gray-50 border-b border-gray-200">
-                <div className="grid grid-cols-12 gap-4 px-6 py-4 text-xs font-medium text-gray-700 uppercase tracking-wide">
+              <div className="bg-gray-800 border-b border-gray-700">
+                <div className="grid grid-cols-12 gap-4 px-6 py-4 text-xs font-medium text-gray-400 uppercase tracking-wide">
                   <div className="col-span-1">#</div>
                   <div className="col-span-6">Title</div>
                   <div className="col-span-3">Album</div>
@@ -242,7 +242,7 @@ const TrackBrowser = () => {
               </div>
 
               {/* Track Items */}
-              <div className="divide-y divide-gray-100">
+              <div className="divide-y divide-gray-800">
                 {filteredTracks?.map((item, index) => (
                   <TrackListItem 
                     key={item.track?.id + '-' + index} 
@@ -259,14 +259,14 @@ const TrackBrowser = () => {
             {filteredTracks?.length === 0 && !loading && (
               <div className="text-center py-20">
                 <div className="mb-4">
-                  <svg className="w-16 h-16 text-gray-300 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-16 h-16 text-gray-600 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 19V6l12-3v13M9 19c0 1.105-1.895 2-4 2s-4-.895-4-2 1.895-2 4-2 4 .895 4 2zm12-3c0 1.105-1.895 2-4 2s-4-.895-4-2 1.895-2 4-2 4 .895 4 2zM9 10l12-3"/>
                   </svg>
                 </div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                <h3 className="text-lg font-medium text-white mb-2">
                   {searchTerm ? 'No tracks found' : 'No tracks available'}
                 </h3>
-                <p className="text-gray-600 max-w-md mx-auto">
+                <p className="text-gray-400 max-w-md mx-auto">
                   {searchTerm 
                     ? `No tracks found matching "${searchTerm}". Try adjusting your search terms.`
                     : 'This playlist appears to be empty or tracks could not be loaded.'
@@ -275,7 +275,7 @@ const TrackBrowser = () => {
                 {searchTerm && (
                   <button
                     onClick={() => setSearchTerm('')}
-                    className="mt-4 text-sm text-gray-600 hover:text-black border border-gray-300 hover:border-black px-4 py-2 transition-colors duration-200"
+                    className="mt-4 text-sm text-gray-400 hover:text-white border border-gray-700 hover:border-white px-4 py-2 transition-colors duration-200"
                   >
                     Clear Search
                   </button>

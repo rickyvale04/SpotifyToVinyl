@@ -218,3 +218,105 @@ html {
     background-position: -200% 0;
   }
 }
+
+/* Dark theme enhancements for playlist page */
+.playlist-dark-theme {
+  background: #000000;
+  color: #ffffff;
+}
+
+.playlist-dark-theme .track-row {
+  border-color: #374151;
+}
+
+.playlist-dark-theme .track-row:hover {
+  background: rgba(55, 65, 81, 0.3);
+}
+
+.playlist-dark-theme .track-row.selected {
+  background: rgba(55, 65, 81, 0.5);
+  border-left: 2px solid #ffffff;
+}
+
+.playlist-dark-theme .stats-card {
+  background: #111827;
+  border: 1px solid #374151;
+}
+
+.playlist-dark-theme .stats-card:hover {
+  background: #1f2937;
+  border-color: #4b5563;
+}
+
+.playlist-dark-theme .search-input {
+  background: #111827;
+  border: 1px solid #374151;
+  color: #ffffff;
+}
+
+.playlist-dark-theme .search-input:hover {
+  background: #1f2937;
+}
+
+.playlist-dark-theme .search-input:focus {
+  border-color: #ffffff;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
+}
+
+/* Selected tracks bar dark theme */
+.selected-tracks-bar-dark {
+  background: #000000;
+  border: 1px solid #374151;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+}
+
+/* Track item enhancements */
+.track-item-enhanced {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.track-item-enhanced:hover {
+  transform: translateX(4px);
+}
+
+.track-item-enhanced.selected {
+  box-shadow: inset 4px 0 0 #ffffff;
+}
+
+/* Checkbox styling for dark theme */
+.checkbox-dark {
+  accent-color: #ffffff;
+  background-color: #374151;
+  border-color: #6b7280;
+}
+
+.checkbox-dark:checked {
+  background-color: #ffffff;
+  border-color: #ffffff;
+}
+
+/* Smooth transitions for all interactive elements */
+.interactive-element {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.interactive-element:hover {
+  transform: translateY(-1px);
+}
+
+.interactive-element:active {
+  transform: translateY(0);
+}
+
+/* Backdrop blur for sticky headers */
+.sticky-header {
+  backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.9);
+}
+
+/* Loading states for dark theme */
+.loading-dark {
+  background: linear-gradient(90deg, #374151 25%, #4b5563 50%, #374151 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
