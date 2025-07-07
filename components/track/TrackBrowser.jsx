@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useRecoilValue, useRecoilState } from 'recoil';
+import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil';
 import { selectedPlaylistState } from '../../atoms/selectedPlaylistAtom';
 import { selectedTracksState } from '../../atoms/selectedTracksAtom';
 import { useRouter } from 'next/router';
@@ -10,12 +10,30 @@ import useSpotify from '../../hooks/useSpotify';
 
 const TrackBrowser = () => {
   const router = useRouter();
+  const { playlistId } = router.query;
   const selectedPlaylist = useRecoilValue(selectedPlaylistState);
+  const setSelectedPlaylist = useSetRecoilState(selectedPlaylistState);
   const [selectedTracks, setSelectedTracks] = useRecoilState(selectedTracksState);
   const [searchTerm, setSearchTerm] = useState('');
   const [tracks, setTracks] = useState([]);
   const [loading, setLoading] = useState(false);
   const spotifyApi = useSpotify();
+
+  // Load playlist if not in state but playlistId is available
+  useEffect(() => {
+    if (playlistId && !selectedPlaylist && spotifyApi && spotifyApi.getAccessToken()) {
+      setLoading(true);
+      spotifyApi.getPlaylist(playlistId)
+        .then((data) => {
+          setSelectedPlaylist(data.body);
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.error('Error fetching playlist:', error);
+          setLoading(false);
+        });
+    }
+  }, [playlistId, selectedPlaylist, spotifyApi, setSelectedPlaylist]);
 
   // Fetch playlist tracks
   useEffect(() => {

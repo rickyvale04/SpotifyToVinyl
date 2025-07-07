@@ -116,75 +116,103 @@ const Song = ({ track, order }) => {
   }, [track]);
 
   return (
-    <tr key={track.id} className="border-b border-[var(--border)] hover:bg-[var(--secondary-bg)]">
-      <td className="py-3 px-2" colSpan="5">
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-center">
-          <div className="flex items-center gap-3 col-span-1 md:col-span-2">
-            <div className="w-6 text-center text-[var(--primary-text)] opacity-70">
-              {order}
+    <div className="grid grid-cols-12 gap-4 px-6 py-4 hover:bg-gray-800 transition-colors duration-200 group">
+      <div className="col-span-1 flex items-center">
+        <span className="text-sm text-gray-400 group-hover:text-gray-300">
+          {order}
+        </span>
+      </div>
+      
+      <div className="col-span-6 flex items-center space-x-4 min-w-0">
+        <div className="w-12 h-12 bg-gray-800 flex-shrink-0 overflow-hidden border border-gray-700 group-hover:border-gray-600 transition-colors duration-200">
+          {track.album?.images?.[0]?.url ? (
+            <img
+              src={track.album.images[0].url}
+              alt={track.album.name}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full bg-gray-800 flex items-center justify-center">
+              <svg className="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9 19V6l12-3v13M9 19c0 1.105-1.895 2-4 2s-4-.895-4-2 1.895-2 4-2 4 .895 4 2zm12-3c0 1.105-1.895 2-4 2s-4-.895-4-2 1.895-2 4-2 4 .895 4 2zM9 10l12-3"/>
+              </svg>
             </div>
-            <div className="avatar">
-              <div className="w-10 h-10 border border-[var(--border)]">
-                <img
-                  src={
-                    track.album.images?.[0]?.url || defaultRecord
-                  }
-                  alt="Track Artwork"
-                />
-              </div>
-            </div>
-            <div>
-              <div className="font-bold text-[var(--primary-text)]">{track.name}</div>
-              <div className="text-sm text-[var(--primary-text)] opacity-70">{track.artists[0].name}</div>
-            </div>
-          </div>
-          <div className="col-span-1 md:col-span-1">
-            <div className="text-[var(--primary-text)]">{track.album.name}</div>
-            <div className="text-xs text-[var(--primary-text)] opacity-70 mt-1">
-              Release Date: {track.album.release_date}
-            </div>
-          </div>
-          <div className="flex justify-center col-span-1 md:col-span-1">
-            {vinyls.length > 0 ? (
-              <CheckIcon
-                className="w-6 h-6 text-[var(--accent)] cursor-pointer"
-                onClick={() => setShowVinyls(!showVinyls)}
-              />
-            ) : (
-              <XIcon className="w-6 h-6 text-[var(--primary-text)] opacity-50" />
-            )}
-          </div>
-          <div className="flex justify-center col-span-1 md:col-span-1">
-            <button
-              className="text-[var(--primary-text)] hover:text-[var(--accent)] text-sm font-bold border border-[var(--border)] px-3 py-1 rounded"
-              onClick={() =>
-                document.getElementById(`my_modal_${track.id}`).showModal()
-              }
-            >
-              Vinyl Details
-            </button>
-          </div>
-          {/* Removed Spotify Logo for better visibility */}
+          )}
         </div>
-      </td>
-      <td style={{ display: 'none' }}>
-        <dialog id={`my_modal_${track.id}`} className="modal">
-          <div className="modal-box w-full bg-[var(--background)] text-[var(--primary-text)]">
+        
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-medium text-white truncate group-hover:text-gray-100 transition-colors duration-200">
+            {track.name}
+          </p>
+          <p className="text-xs text-gray-400 truncate group-hover:text-gray-300 transition-colors duration-200">
+            {track.artists?.map(artist => artist.name).join(', ')}
+          </p>
+        </div>
+      </div>
+      
+      <div className="col-span-3 flex items-center">
+        <div className="min-w-0 flex-1">
+          <p className="text-sm text-gray-400 truncate group-hover:text-gray-300 transition-colors duration-200">
+            {track.album?.name}
+          </p>
+          <p className="text-xs text-gray-500 truncate">
+            {track.album?.release_date}
+          </p>
+        </div>
+      </div>
+      
+      <div className="col-span-2 flex items-center justify-end space-x-2">
+        {vinyls.length > 0 ? (
+          <div className="flex items-center space-x-2">
+            <CheckIcon className="w-5 h-5 text-green-400" />
+            <span className="text-xs text-green-400">Available</span>
+          </div>
+        ) : (
+          <div className="flex items-center space-x-2">
+            <XIcon className="w-5 h-5 text-gray-500" />
+            <span className="text-xs text-gray-500">Not found</span>
+          </div>
+        )}
+        
+        <button
+          className="text-xs text-gray-400 hover:text-white border border-gray-600 hover:border-gray-400 px-3 py-1 transition-colors duration-200"
+          onClick={() => document.getElementById(`my_modal_${track.id}`).showModal()}
+        >
+          Details
+        </button>
+      </div>
+
+      {/* Modal */}
+      <dialog id={`my_modal_${track.id}`} className="modal">
+        <div className="modal-box w-full max-w-4xl bg-gray-900 border border-gray-700 text-white">
+          <div className="mb-4">
+            <h3 className="text-lg font-medium text-white mb-2">Vinyl Details for "{track.name}"</h3>
+            <p className="text-sm text-gray-400">by {track.artists?.map(artist => artist.name).join(', ')}</p>
+          </div>
+          
+          <div className="overflow-x-auto">
             <table className="table w-full">
               <thead>
-                <tr className="border-b border-[var(--border)]">
-                  <th className="text-[var(--primary-text)]">Album</th>
-                  <th className="text-[var(--primary-text)]">Country</th>
-                  <th className="text-[var(--primary-text)]">Year</th>
-                  <th className="text-[var(--primary-text)]">Label</th>
-                  <th className="text-[var(--primary-text)]">Format</th>
+                <tr className="border-b border-gray-700">
+                  <th className="text-gray-300">Album</th>
+                  <th className="text-gray-300">Country</th>
+                  <th className="text-gray-300">Year</th>
+                  <th className="text-gray-300">Label</th>
+                  <th className="text-gray-300">Format</th>
                   <th></th>
                 </tr>
               </thead>
               <tbody>
                 {vinyls.length === 0 ? (
-                  <tr className="border-b border-[var(--border)]">
-                    <td colSpan="5" className="text-[var(--primary-text)] opacity-70">No Vinyl Details</td>
+                  <tr className="border-b border-gray-800">
+                    <td colSpan="6" className="text-center py-8">
+                      <div className="text-gray-400">
+                        <svg className="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 19V6l12-3v13M9 19c0 1.105-1.895 2-4 2s-4-.895-4-2 1.895-2 4-2 4 .895 4 2zm12-3c0 1.105-1.895 2-4 2s-4-.895-4-2 1.895-2 4-2 4 .895 4 2zM9 10l12-3"/>
+                        </svg>
+                        <p>No vinyl records found</p>
+                      </div>
+                    </td>
                   </tr>
                 ) : (
                   getCurrentVinyls().map((vinyl, index) => (
@@ -193,31 +221,36 @@ const Song = ({ track, order }) => {
                 )}
               </tbody>
             </table>
-            {vinyls.length > 0 && (
-              <div className="pagination flex justify-center mt-4 gap-2">
-                {Array.from({ length: totalPages }, (_, index) => (
-                  <button
-                    key={index}
-                    className={`px-3 py-1 border border-[var(--border)] text-[var(--primary-text)] hover:text-[var(--accent)] hover:border-[var(--accent)] rounded ${
-                      currentPage === index + 1 ? "bg-[var(--secondary-bg)]" : ""
-                    }`}
-                    onClick={() => handlePageChange(index + 1)}
-                  >
-                    {index + 1}
-                  </button>
-                ))}
-              </div>
-            )}
-            <div className="modal-action">
-              <form method="dialog">
-                <button className="text-[var(--primary-text)] hover:text-[var(--accent)] border border-[var(--border)] px-3 py-1 rounded">Close</button>
-              </form>
-            </div>
           </div>
-        </dialog>
-      </td>
-      {/* Removed Spotify Logo link for better visibility */}
-    </tr>
+          
+          {vinyls.length > 0 && totalPages > 1 && (
+            <div className="flex justify-center mt-4 gap-2">
+              {Array.from({ length: totalPages }, (_, index) => (
+                <button
+                  key={index}
+                  className={`px-3 py-1 text-sm border transition-colors duration-200 ${
+                    currentPage === index + 1 
+                      ? "bg-gray-700 border-gray-600 text-white" 
+                      : "border-gray-600 text-gray-400 hover:text-white hover:border-gray-400"
+                  }`}
+                  onClick={() => handlePageChange(index + 1)}
+                >
+                  {index + 1}
+                </button>
+              ))}
+            </div>
+          )}
+          
+          <div className="modal-action">
+            <form method="dialog">
+              <button className="text-gray-400 hover:text-white border border-gray-600 hover:border-gray-400 px-4 py-2 transition-colors duration-200">
+                Close
+              </button>
+            </form>
+          </div>
+        </div>
+      </dialog>
+    </div>
   );
 };
 

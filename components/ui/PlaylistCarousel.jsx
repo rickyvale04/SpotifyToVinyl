@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/outline';
 import { useSetRecoilState } from 'recoil';
+import { useRouter } from 'next/router';
 import { playlistIdState } from '../../atoms/playlistId';
 import { selectedPlaylistState } from '../../atoms/selectedPlaylistAtom';
 
@@ -8,6 +9,7 @@ const PlaylistCarousel = ({ playlists = [] }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [slidesToShow, setSlidesToShow] = useState(4);
+  const router = useRouter();
   const setPlaylistId = useSetRecoilState(playlistIdState);
   const setSelectedPlaylist = useSetRecoilState(selectedPlaylistState);
 
@@ -51,6 +53,8 @@ const PlaylistCarousel = ({ playlists = [] }) => {
   const handlePlaylistClick = (playlist) => {
     setPlaylistId(playlist.id);
     setSelectedPlaylist(playlist);
+    // Navigate to playlist page
+    router.push(`/playlist/${playlist.id}`);
   };
 
   if (playlists.length === 0) {

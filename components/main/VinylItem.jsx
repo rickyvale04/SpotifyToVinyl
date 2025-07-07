@@ -2,36 +2,45 @@ import Link from "next/link";
 
 const VinylItem = ({ vinyl }) => {
   return (
-    <tr>
-      <td className="col-span-3 truncate">{vinyl.title}</td>
-      <td>{vinyl.country}</td>
-      <td className="text-center">{vinyl.year}</td>
-      <td>{vinyl.label[0]}</td>
-      <td className="text-center">{vinyl.format[0]}</td>
-      <td className="flex gap-2 justify-center">
-        <Link
-          href={`https://www.discogs.com${vinyl.uri}`}
-          target="_blank"
-          className="flex-1 pr-1"
-        >
-          <p className="btn text-center btn-primary">Buy Vinyl</p>
-        </Link>
-        <button
-          onClick={() => {
-            const discogsTokens = localStorage.getItem("discogs_tokens");
-            if (!discogsTokens) {
-              alert("Please log in to Discogs to add items to your wantlist.");
-              return;
-            }
-            alert("Adding to Wantlist... (Functionality to be fully implemented)");
-            // Placeholder for Discogs API call to add to wantlist
-            // Extract release ID from vinyl.uri or vinyl.id if available
-            // Use tokens from localStorage to authenticate API request
-          }}
-          className="btn text-center btn-primary"
-        >
-          Add to Wantlist
-        </button>
+    <tr className="border-b border-gray-800 hover:bg-gray-800 transition-colors duration-200">
+      <td className="py-4 px-3">
+        <div className="text-sm text-white truncate max-w-xs">{vinyl.title}</div>
+      </td>
+      <td className="py-4 px-3">
+        <div className="text-sm text-gray-400">{vinyl.country}</div>
+      </td>
+      <td className="py-4 px-3 text-center">
+        <div className="text-sm text-gray-400">{vinyl.year}</div>
+      </td>
+      <td className="py-4 px-3">
+        <div className="text-sm text-gray-400 truncate max-w-xs">{vinyl.label?.[0]}</div>
+      </td>
+      <td className="py-4 px-3 text-center">
+        <div className="text-sm text-gray-400">{vinyl.format?.[0]}</div>
+      </td>
+      <td className="py-4 px-3">
+        <div className="flex gap-2 justify-center">
+          <Link
+            href={`https://www.discogs.com${vinyl.uri}`}
+            target="_blank"
+            className="text-xs text-gray-400 hover:text-white border border-gray-600 hover:border-gray-400 px-3 py-1 transition-colors duration-200"
+          >
+            Buy Vinyl
+          </Link>
+          <button
+            onClick={() => {
+              const discogsTokens = localStorage.getItem("discogs_tokens");
+              if (!discogsTokens) {
+                alert("Please log in to Discogs to add items to your wantlist.");
+                return;
+              }
+              alert("Adding to Wantlist... (Functionality to be fully implemented)");
+            }}
+            className="text-xs text-gray-400 hover:text-white border border-gray-600 hover:border-gray-400 px-3 py-1 transition-colors duration-200"
+          >
+            Add to Wantlist
+          </button>
+        </div>
       </td>
     </tr>
   );

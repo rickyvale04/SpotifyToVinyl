@@ -1,13 +1,20 @@
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useSetRecoilState } from "recoil";
 import { playlistState } from "../../../atoms/playlistAtom";
+import { selectedPlaylistState } from "../../../atoms/selectedPlaylistAtom";
 
 const PlaylistItem = ({ playlist, color, isActive, onClick }) => {
+  const router = useRouter();
   const setPlaylist = useSetRecoilState(playlistState);
+  const setSelectedPlaylist = useSetRecoilState(selectedPlaylistState);
 
   const handleClick = () => {
     setPlaylist(playlist);
+    setSelectedPlaylist(playlist);
     if (onClick) onClick();
+    // Navigate to playlist page
+    router.push(`/playlist/${playlist.id}`);
   };
 
   return (
