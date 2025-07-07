@@ -1,11 +1,32 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useDiscogsWantlist } from "../../hooks/useDiscogsWantlist";
 
 const VinylItem = ({ vinyl }) => {
   const [isAdding, setIsAdding] = useState(false);
   const [addedToWantlist, setAddedToWantlist] = useState(false);
-  const { addToWantlist, loading, error, isLoggedIn } = useDiscogsWantlist();
+  const [isInWantlist, setIsInWantlist] = useState(false);
+  const [checkingWantlist, setCheckingWantlist] = useState(false);
+  const { addToWantlist, checkWantlistStatus, loading, error, isLoggedIn } = useDiscogsWantlist();
+
+  // Check if item is already in wantlist when component mounts
+  useEffect(() => {
+    const checkStatus = async () => {
+      if (vinyl.id && isLoggedIn) {
+        setCheckingWantlist(true);
+        try {
+          const inWantlist = await checkWantlistStatus(vinyl.id);
+          setIsInWantlist(inWantlist);
+        } catch (error) {
+          console.error('Error checking wantlist status:', error);
+        } finally {
+          setCheckingWantlist(false);
+        }
+      }
+    };
+
+    checkStatus();
+  }, [vinyl.id, isLoggedIn, checkWantlistStatus]);
 
   const handleAddToWantlist = async () => {
     console.log('handleAddToWantlist called');
@@ -29,6 +50,7 @@ const VinylItem = ({ vinyl }) => {
     try {
       await addToWantlist(vinyl.id);
       setAddedToWantlist(true);
+      setIsInWantlist(true); // Update local state
       
       // Show success message
       const successMessage = document.createElement('div');

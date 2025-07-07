@@ -108,9 +108,30 @@ export const useDiscogsWantlist = () => {
     }
   };
 
+  const checkWantlistStatus = async (releaseId) => {
+    try {
+      const tokens = JSON.parse(localStorage.getItem('discogs_tokens') || '{}');
+      
+      if (!tokens.access_token || !tokens.access_token_secret || !tokens.username) {
+        return false;
+      }
+
+      const response = await fetch(`/api/discogs/wantlist-check?releaseId=${releaseId}&tokens=${encodeURIComponent(JSON.stringify(tokens))}&username=${tokens.username}`, {
+        method: 'GET',
+      });
+
+      const result = await response.json();
+      return result.inWantlist || false;
+    } catch (error) {
+      console.error('Error checking wantlist status:', error);
+      return false;
+    }
+  };
+
   return {
     addToWantlist,
     removeFromWantlist,
+    checkWantlistStatus,
     loading,
     error,
     isLoggedIn,
