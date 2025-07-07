@@ -8,6 +8,13 @@ const VinylItem = ({ vinyl }) => {
   const { addToWantlist, loading, error, isLoggedIn } = useDiscogsWantlist();
 
   const handleAddToWantlist = async () => {
+    console.log('handleAddToWantlist called');
+    console.log('isLoggedIn:', isLoggedIn);
+    
+    // Check localStorage directly
+    const tokensString = localStorage.getItem('discogs_tokens');
+    console.log('Tokens in localStorage:', tokensString);
+    
     if (!isLoggedIn) {
       alert("Please log in to Discogs to add items to your wantlist.");
       return;

@@ -1,21 +1,44 @@
-import { useState } from 'react';
-import { useRecoilValue } from 'recoil';
-import { discogsUserState } from '../atoms/discogsAtom';
+import { useState, useEffect } from 'react';
 
 export const useDiscogsWantlist = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const discogsUser = useRecoilValue(discogsUserState);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // Check if user is logged in by checking localStorage
+  useEffect(() => {
+    const checkLoginStatus = () => {
+      try {
+        const tokens = JSON.parse(localStorage.getItem('discogs_tokens') || '{}');
+        setIsLoggedIn(!!tokens.access_token && !!tokens.access_token_secret);
+      } catch (error) {
+        console.error('Error checking login status:', error);
+        setIsLoggedIn(false);
+      }
+    };
+
+    checkLoginStatus();
+    
+    // Check periodically in case tokens change
+    const interval = setInterval(checkLoginStatus, 1000);
+    
+    return () => clearInterval(interval);
+  }, []);
 
   const addToWantlist = async (releaseId) => {
     setLoading(true);
     setError(null);
 
     try {
-      // Get tokens from localStorage
-      const tokens = JSON.parse(localStorage.getItem('discogs_tokens') || '{}');
+      // Get tokens from localStorage with debugging
+      const tokensString = localStorage.getItem('discogs_tokens');
+      console.log('Raw tokens from localStorage:', tokensString);
+      
+      const tokens = JSON.parse(tokensString || '{}');
+      console.log('Parsed tokens:', tokens);
       
       if (!tokens.access_token || !tokens.access_token_secret) {
+        console.log('Missing tokens - access_token:', !!tokens.access_token, 'access_token_secret:', !!tokens.access_token_secret);
         throw new Error('Please log in to Discogs first');
       }
 
@@ -88,6 +111,6 @@ export const useDiscogsWantlist = () => {
     removeFromWantlist,
     loading,
     error,
-    isLoggedIn: !!discogsUser,
+    isLoggedIn,
   };
 };
