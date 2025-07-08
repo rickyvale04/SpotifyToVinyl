@@ -4,29 +4,8 @@ import { useDiscogsWantlist } from "../../hooks/useDiscogsWantlist";
 
 const VinylItem = ({ vinyl }) => {
   const [isAdding, setIsAdding] = useState(false);
-  const [addedToWantlist, setAddedToWantlist] = useState(false);
-  const [isInWantlist, setIsInWantlist] = useState(false);
-  const [checkingWantlist, setCheckingWantlist] = useState(false);
+  const [wantlistStatus, setWantlistStatus] = useState(null); // null = not checked, true = in wantlist, false = not in wantlist
   const { addToWantlist, checkWantlistStatus, loading, error, isLoggedIn } = useDiscogsWantlist();
-
-  // Check if item is already in wantlist when component mounts
-  useEffect(() => {
-    const checkStatus = async () => {
-      if (vinyl.id && isLoggedIn) {
-        setCheckingWantlist(true);
-        try {
-          const inWantlist = await checkWantlistStatus(vinyl.id);
-          setIsInWantlist(inWantlist);
-        } catch (error) {
-          console.error('Error checking wantlist status:', error);
-        } finally {
-          setCheckingWantlist(false);
-        }
-      }
-    };
-
-    checkStatus();
-  }, [vinyl.id, isLoggedIn, checkWantlistStatus]);
 
   const handleAddToWantlist = async () => {
     console.log('handleAddToWantlist called');
@@ -48,9 +27,28 @@ const VinylItem = ({ vinyl }) => {
 
     setIsAdding(true);
     try {
+      // First check if it's already in wantlist
+      const inWantlist = await checkWantlistStatus(vinyl.id);
+      
+      if (inWantlist) {
+        setWantlistStatus(true);
+        // Show already in wantlist message
+        const message = document.createElement('div');
+        message.className = 'fixed top-4 right-4 bg-yellow-600 text-white px-4 py-2 rounded shadow-lg z-50';
+        message.textContent = 'This item is already in your wantlist!';
+        document.body.appendChild(message);
+        
+        setTimeout(() => {
+          if (document.body.contains(message)) {
+            document.body.removeChild(message);
+          }
+        }, 3000);
+        return;
+      }
+
+      // If not in wantlist, add it
       await addToWantlist(vinyl.id);
-      setAddedToWantlist(true);
-      setIsInWantlist(true); // Update local state
+      setWantlistStatus(true);
       
       // Show success message
       const successMessage = document.createElement('div');
@@ -59,12 +57,14 @@ const VinylItem = ({ vinyl }) => {
       document.body.appendChild(successMessage);
       
       setTimeout(() => {
-        document.body.removeChild(successMessage);
+        if (document.body.contains(successMessage)) {
+          document.body.removeChild(successMessage);
+        }
       }, 3000);
       
     } catch (error) {
-      console.error('Error adding to wantlist:', error);
-      alert(`Failed to add to wantlist: ${error.message}`);
+      console.error('Error with wantlist operation:', error);
+      alert(`Failed to process wantlist request: ${error.message}`);
     } finally {
       setIsAdding(false);
     }
@@ -98,9 +98,9 @@ const VinylItem = ({ vinyl }) => {
           </Link>
           <button
             onClick={handleAddToWantlist}
-            disabled={isAdding || addedToWantlist}
+            disabled={isAdding || wantlistStatus === true}
             className={`text-xs px-3 py-1 transition-colors duration-200 ${
-              addedToWantlist
+              wantlistStatus === true
                 ? 'text-green-400 border border-green-400 cursor-not-allowed'
                 : isAdding
                 ? 'text-gray-500 border border-gray-500 cursor-not-allowed'
@@ -115,12 +115,12 @@ const VinylItem = ({ vinyl }) => {
                 </svg>
                 Adding...
               </span>
-            ) : addedToWantlist ? (
+            ) : wantlistStatus === true ? (
               <span className="flex items-center gap-1">
                 <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                 </svg>
-                Added!
+                In Wantlist
               </span>
             ) : (
               'Add to Wantlist'

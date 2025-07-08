@@ -69,17 +69,26 @@ const Center = () => {
               <span>Home</span>
             </button>
           )}
-          <div
-            className='flex items-center bg-white border border-gray-200 space-x-3 hover:bg-gray-50 cursor-pointer p-1 pr-2 text-black'
-            onClick={() => signOut({ callbackUrl: '/login' })}
-          >
-            <img
-              className='w-10 h-10'
-              src={session?.user.image}
-              alt=''
-            />
-            <h2 className="text-sm font-medium">{session?.user.name}</h2>
-          </div>
+          {session ? (
+            <div
+              className='flex items-center bg-white border border-gray-200 space-x-3 hover:bg-gray-50 cursor-pointer p-1 pr-2 text-black'
+              onClick={() => signOut({ callbackUrl: '/login' })}
+            >
+              <img
+                className='w-10 h-10'
+                src={session?.user.image}
+                alt=''
+              />
+              <h2 className="text-sm font-medium">{session?.user.name}</h2>
+            </div>
+          ) : (
+            <button
+              onClick={() => router.push('/login')}
+              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 text-sm font-medium transition-all duration-200 flex items-center space-x-2"
+            >
+              <span>Login</span>
+            </button>
+          )}
         </div>
       </header>
 
@@ -160,98 +169,29 @@ const Center = () => {
           </div>
         </div>
       ) : (
-        // Selected playlist view - Hardwax style
-        <div className="min-h-screen bg-black text-white">
-          {/* Header */}
-          <div className="bg-black border-b border-gray-800 sticky top-0 z-10">
-            <div className="max-w-7xl mx-auto px-6 py-6">
-              <div className="flex items-center justify-between mb-6">
+        // Selected playlist view
+        <>
+          <section className={`flex items-end space-x-7 bg-gradient-to-b to-black ${color} h-80 text-white p-8`}>
+            {playlist && (
+              <img className='h-44 w-44 shadow-2xl' src={playlist?.images?.[0]?.url} alt='' />
+            )}
+            <div>
+              <p>PLAYLIST</p>
+              <h1 className='text-2xl md:text-3xl xl:text-5xl font-bold'>{playlist?.name}</h1>
+              {playlistId && (
                 <button
-                  onClick={() => {
-                    setPlaylistId('');
-                    setSelectedPlaylist(null);
-                  }}
-                  className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors duration-200 group"
+                  onClick={handleSelectTracks}
+                  className="mt-4 bg-green-500 text-white py-2 px-4 rounded-full hover:bg-green-600 transition duration-300"
                 >
-                  <svg className="h-5 w-5 group-hover:transform group-hover:-translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
-                  <span className="text-sm font-medium">Back to Home</span>
+                  Select Tracks
                 </button>
-                <div className="text-center">
-                  <h1 className="text-white text-xl font-medium">Playlist View</h1>
-                  <p className="text-gray-500 text-xs mt-1">Browse and select tracks</p>
-                </div>
-                <div className="w-32" />
-              </div>
-
-              {/* Playlist Info */}
-              {playlist && (
-                <div className="flex items-start space-x-8 mb-8">
-                  <div className="w-32 h-32 bg-gray-900 flex-shrink-0 overflow-hidden shadow-lg border border-gray-800">
-                    {playlist.images?.[0]?.url ? (
-                      <img
-                        src={playlist.images[0].url}
-                        alt={playlist.name}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-gray-900 flex items-center justify-center">
-                        <svg className="w-16 h-16 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-                          <path d="M9 19V6l12-3v13M9 19c0 1.105-1.895 2-4 2s-4-.895-4-2 1.895-2 4-2 4 .895 4 2zm12-3c0 1.105-1.895 2-4 2s-4-.895-4-2 1.895-2 4-2 4 .895 4 2zM9 10l12-3"/>
-                        </svg>
-                      </div>
-                    )}
-                  </div>
-                  
-                  <div className="flex-1 min-w-0">
-                    <div className="mb-4">
-                      <p className="text-gray-500 text-xs font-medium uppercase tracking-wide mb-2">PLAYLIST</p>
-                      <h2 className="text-white text-3xl font-medium truncate mb-3">{playlist.name}</h2>
-                      {playlist.description && (
-                        <p className="text-gray-400 text-sm mb-4 line-clamp-2 leading-relaxed">
-                          {playlist.description}
-                        </p>
-                      )}
-                    </div>
-                    
-                    <div className="flex items-center space-x-8 text-sm text-gray-400 mb-6">
-                      <span className="flex items-center space-x-2">
-                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd"/>
-                        </svg>
-                        <span>By {playlist.owner?.display_name}</span>
-                      </span>
-                      <span className="flex items-center space-x-2">
-                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                          <path d="M9 19V6l12-3v13M9 19c0 1.105-1.895 2-4 2s-4-.895-4-2 1.895-2 4-2 4 .895 4 2zm12-3c0 1.105-1.895 2-4 2s-4-.895-4-2 1.895-2 4-2 4 .895 4 2zM9 10l12-3"/>
-                        </svg>
-                        <span>{playlist.tracks?.total || 0} tracks</span>
-                      </span>
-                    </div>
-
-                    <button
-                      onClick={handleSelectTracks}
-                      className="bg-white text-black px-6 py-3 text-sm font-medium hover:bg-gray-200 transition-colors duration-200 flex items-center space-x-2"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                      <span>Select Tracks</span>
-                    </button>
-                  </div>
-                </div>
               )}
             </div>
+          </section>
+          <div>
+            <Songs tracks={playlist?.tracks?.items || []} />
           </div>
-
-          {/* Content */}
-          <div className="max-w-7xl mx-auto px-6 py-6">
-            <div className="bg-gray-900 border border-gray-800 overflow-hidden">
-              <Songs tracks={playlist?.tracks?.items || []} />
-            </div>
-          </div>
-        </div>
+        </>
       )}
     </div>
   );

@@ -169,30 +169,6 @@ const TrackBrowser = () => {
             </div>
           </div>
 
-          {/* Stats Bar */}
-          <div className="grid grid-cols-4 gap-6 mb-8">
-            <div className="bg-gray-900 border border-gray-800 p-6 text-center hover:bg-gray-800 transition-colors duration-200">
-              <p className="text-3xl font-medium text-white mb-1">{tracks.length}</p>
-              <p className="text-xs text-gray-400 uppercase tracking-wide">Total Tracks</p>
-            </div>
-            <div className="bg-gray-900 border border-gray-800 p-6 text-center hover:bg-gray-800 transition-colors duration-200">
-              <p className="text-3xl font-medium text-white mb-1">{selectedTracks.length}</p>
-              <p className="text-xs text-gray-400 uppercase tracking-wide">Selected</p>
-            </div>
-            <div className="bg-gray-900 border border-gray-800 p-6 text-center hover:bg-gray-800 transition-colors duration-200">
-              <p className="text-3xl font-medium text-white mb-1">
-                {Math.round(tracks.reduce((total, item) => total + (item.track?.duration_ms || 0), 0) / 60000)}
-              </p>
-              <p className="text-xs text-gray-400 uppercase tracking-wide">Minutes</p>
-            </div>
-            <div className="bg-gray-900 border border-gray-800 p-6 text-center hover:bg-gray-800 transition-colors duration-200">
-              <p className="text-3xl font-medium text-white mb-1">
-                {new Set(tracks.map(item => item.track?.artists?.[0]?.name)).size}
-              </p>
-              <p className="text-xs text-gray-400 uppercase tracking-wide">Artists</p>
-            </div>
-          </div>
-
           {/* Search Bar */}
           <div className="relative max-w-md">
             <SearchIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />

@@ -12,23 +12,7 @@ export default function Home() {
     setIsClient(true);
   }, []);
 
-  // Redirect to "/login" if no session or no tokens in localStorage
-  useEffect(() => {
-    if (status === 'loading' || !isClient) return; // Exit if loading or not client-side
-
-    try {
-      const accessToken = localStorage.getItem('access_token');
-      if (!session && !accessToken) {
-        router.push('/login'); // Redirect to "/login" if no session and no token
-      }
-    } catch (error) {
-      console.error('Error accessing localStorage:', error);
-      if (!session) {
-        router.push('/login');
-      }
-    }
-  }, [session, status, router, isClient]);
-
+  // Show loading spinner while checking session
   if (status === 'loading' || !isClient) {
     return (
       <div className="flex justify-center items-center h-screen bg-black">
@@ -36,11 +20,8 @@ export default function Home() {
       </div>
     );
   }
-  
-  if (!session) {
-    return null; // Or a login prompt, since redirection is handled in useEffect
-  }
 
+  // Always show Dashboard - users can login from there if needed
   return (
     <Dashboard />
   );

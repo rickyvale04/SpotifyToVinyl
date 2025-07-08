@@ -16,8 +16,7 @@ const Song = ({ track, order }) => {
   const [showVinyls, setShowVinyls] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [addingToWantlist, setAddingToWantlist] = useState(false);
-  const [isInWantlist, setIsInWantlist] = useState(false);
-  const [checkingWantlist, setCheckingWantlist] = useState(false);
+  const [wantlistStatus, setWantlistStatus] = useState(null); // null = not checked, true = in wantlist, false = not in wantlist
   const vinylsRef = useRef(null);
 
   const totalPages = Math.ceil(vinyls.length / itemsPerPage);
@@ -32,28 +31,6 @@ const Song = ({ track, order }) => {
     setCurrentPage(pageNumber);
   };
 
-  // Check wantlist status when vinyls are loaded
-  useEffect(() => {
-    const checkFirstVinylInWantlist = async () => {
-      if (vinyls.length > 0 && isLoggedIn) {
-        setCheckingWantlist(true);
-        try {
-          const firstVinyl = vinyls[0];
-          if (firstVinyl.id) {
-            const inWantlist = await checkWantlistStatus(firstVinyl.id);
-            setIsInWantlist(inWantlist);
-          }
-        } catch (error) {
-          console.error('Error checking wantlist status:', error);
-        } finally {
-          setCheckingWantlist(false);
-        }
-      }
-    };
-
-    checkFirstVinylInWantlist();
-  }, [vinyls, isLoggedIn, checkWantlistStatus]);
-
   const handleAddToWantlist = async () => {
     if (!isLoggedIn) {
       alert("Please log in to Discogs to add items to your wantlist.");
@@ -65,7 +42,6 @@ const Song = ({ track, order }) => {
       return;
     }
 
-    // Add the first vinyl found to wantlist
     const firstVinyl = vinyls[0];
     if (!firstVinyl.id) {
       alert("Unable to add this item - missing release ID.");
@@ -74,8 +50,28 @@ const Song = ({ track, order }) => {
 
     setAddingToWantlist(true);
     try {
+      // Only check wantlist status when button is pressed
+      const inWantlist = await checkWantlistStatus(firstVinyl.id);
+      
+      if (inWantlist) {
+        setWantlistStatus(true);
+        // Show already in wantlist message
+        const message = document.createElement('div');
+        message.className = 'fixed top-4 right-4 bg-yellow-600 text-white px-4 py-2 rounded shadow-lg z-50';
+        message.textContent = 'This item is already in your wantlist!';
+        document.body.appendChild(message);
+        
+        setTimeout(() => {
+          if (document.body.contains(message)) {
+            document.body.removeChild(message);
+          }
+        }, 3000);
+        return;
+      }
+
+      // If not in wantlist, add it
       await addToWantlist(firstVinyl.id);
-      setIsInWantlist(true); // Update local state
+      setWantlistStatus(true);
       
       // Show success message
       const successMessage = document.createElement('div');
@@ -90,8 +86,8 @@ const Song = ({ track, order }) => {
       }, 3000);
       
     } catch (error) {
-      console.error('Error adding to wantlist:', error);
-      alert(`Failed to add to wantlist: ${error.message}`);
+      console.error('Error with wantlist operation:', error);
+      alert(`Failed to process wantlist request: ${error.message}`);
     } finally {
       setAddingToWantlist(false);
     }
@@ -247,26 +243,18 @@ const Song = ({ track, order }) => {
         {vinyls.length > 0 && (
           <button
             onClick={handleAddToWantlist}
-            disabled={addingToWantlist || !isLoggedIn || isInWantlist || checkingWantlist}
+            disabled={addingToWantlist || !isLoggedIn || wantlistStatus === true}
             className={`text-xs px-3 py-1 transition-colors duration-200 ${
-              isInWantlist
+              wantlistStatus === true
                 ? 'text-green-400 border border-green-400 cursor-not-allowed'
-                : addingToWantlist || checkingWantlist
+                : addingToWantlist
                 ? 'text-gray-500 border border-gray-500 cursor-not-allowed'
                 : isLoggedIn
                 ? 'text-gray-400 hover:text-white border border-gray-600 hover:border-gray-400'
                 : 'text-gray-600 border border-gray-700 cursor-not-allowed'
             }`}
           >
-            {checkingWantlist ? (
-              <span className="flex items-center gap-1">
-                <svg className="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Checking...
-              </span>
-            ) : isInWantlist ? (
+            {wantlistStatus === true ? (
               <span className="flex items-center gap-1">
                 <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />

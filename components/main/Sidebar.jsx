@@ -7,11 +7,13 @@ import { selectedPlaylistState } from "../../atoms/selectedPlaylistAtom";
 import { userState } from "../../atoms/userAtom";
 import { discogsUserState, discogsTokenState } from "../../atoms/discogsAtom";
 import { useSession, signOut, signIn } from "next-auth/react";
+import { useRouter } from "next/router";
 import useSpotify from "../../hooks/useSpotify";
 
 function Sidebar() {
   const spotifyApi = useSpotify();
   const { data: session } = useSession();
+  const router = useRouter();
   const [playlists, setPlaylists] = useRecoilState(playlistState);
   const setPlaylistId = useSetRecoilState(playlistIdState);
   const setSelectedPlaylist = useSetRecoilState(selectedPlaylistState);
@@ -91,6 +93,13 @@ function Sidebar() {
     } finally {
       setIsConnectingSpotify(false);
     }
+  };
+
+  // Handle playlist click
+  const handlePlaylistClick = (playlist) => {
+    setPlaylistId(playlist.id);
+    setSelectedPlaylist(playlist);
+    router.push(`/playlist/${playlist.id}`);
   };
 
   // Handle Discogs login
@@ -183,10 +192,7 @@ function Sidebar() {
             {playlists.map((playlist) => (
               <div
                 key={playlist.id}
-                onClick={() => {
-                  setPlaylistId(playlist.id)
-                  setSelectedPlaylist(playlist)
-                }}
+                onClick={() => handlePlaylistClick(playlist)}
                 className="group cursor-pointer p-2 hover:bg-gray-50 transition-all duration-200"
               >
                 <div className="flex items-center space-x-3">
