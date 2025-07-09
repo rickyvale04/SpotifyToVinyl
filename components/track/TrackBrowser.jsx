@@ -1,11 +1,9 @@
 import { useEffect, useState } from 'react';
-import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { selectedPlaylistState } from '../../atoms/selectedPlaylistAtom';
-import { selectedTracksState } from '../../atoms/selectedTracksAtom';
 import { useRouter } from 'next/router';
 import { ChevronLeftIcon, SearchIcon } from '@heroicons/react/outline';
 import TrackListItem from './TrackListItem';
-import SelectedTracksBar from './SelectedTracksBar';
 import useSpotify from '../../hooks/useSpotify';
 
 const TrackBrowser = () => {
@@ -13,7 +11,6 @@ const TrackBrowser = () => {
   const { playlistId } = router.query;
   const selectedPlaylist = useRecoilValue(selectedPlaylistState);
   const setSelectedPlaylist = useSetRecoilState(selectedPlaylistState);
-  const [selectedTracks, setSelectedTracks] = useRecoilState(selectedTracksState);
   const [searchTerm, setSearchTerm] = useState('');
   const [tracks, setTracks] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -56,29 +53,6 @@ const TrackBrowser = () => {
     item.track?.artists[0]?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     item.track?.album?.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  const handleTrackSelect = (track, isSelected) => {
-    if (isSelected) {
-      setSelectedTracks(prev => [...prev, track]);
-    } else {
-      setSelectedTracks(prev => prev.filter(t => t.id !== track.id));
-    }
-  };
-
-  const handleClearSelection = () => {
-    setSelectedTracks([]);
-  };
-
-  const handleSearchVinyl = (tracks) => {
-    // Here you would navigate to the vinyl search page with selected tracks
-    console.log('Searching vinyl for tracks:', tracks);
-    // You could navigate to a search page or open a modal
-    router.push('/search?tracks=' + tracks.map(t => t.id).join(','));
-  };
-
-  const isTrackSelected = (track) => {
-    return selectedTracks.some(t => t.id === track.id);
-  };
 
   if (!selectedPlaylist) {
     return (
@@ -207,20 +181,6 @@ const TrackBrowser = () => {
                   {filteredTracks?.length || 0} tracks
                 </span>
               </div>
-              
-              {selectedTracks.length > 0 && (
-                <div className="flex items-center space-x-4">
-                  <span className="text-sm text-gray-400">
-                    {selectedTracks.length} selected
-                  </span>
-                  <button
-                    onClick={handleClearSelection}
-                    className="text-sm text-gray-400 hover:text-white border border-gray-700 hover:border-white px-3 py-1 transition-colors duration-200"
-                  >
-                    Clear Selection
-                  </button>
-                </div>
-              )}
             </div>
 
             {/* Track List */}
@@ -229,9 +189,10 @@ const TrackBrowser = () => {
               <div className="bg-gray-800 border-b border-gray-700">
                 <div className="grid grid-cols-12 gap-4 px-6 py-4 text-xs font-medium text-gray-400 uppercase tracking-wide">
                   <div className="col-span-1">#</div>
-                  <div className="col-span-6">Title</div>
+                  <div className="col-span-5">Title</div>
                   <div className="col-span-3">Album</div>
-                  <div className="col-span-2">Duration</div>
+                  <div className="col-span-1">On Discogs</div>
+                  <div className="col-span-2">Actions</div>
                 </div>
               </div>
 
@@ -241,9 +202,7 @@ const TrackBrowser = () => {
                   <TrackListItem 
                     key={item.track?.id + '-' + index} 
                     track={item.track} 
-                    index={index + 1}
-                    isSelected={isTrackSelected(item.track)}
-                    onToggleSelect={(isSelected) => handleTrackSelect(item.track, isSelected)}
+                    index={index}
                   />
                 ))}
               </div>
@@ -279,13 +238,6 @@ const TrackBrowser = () => {
           </>
         )}
       </div>
-
-      {/* Selected Tracks Bar */}
-      <SelectedTracksBar 
-        selectedTracks={selectedTracks}
-        onClearSelection={handleClearSelection}
-        onSearchVinyl={handleSearchVinyl}
-      />
     </div>
   );
 };

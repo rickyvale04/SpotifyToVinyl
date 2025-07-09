@@ -55,6 +55,24 @@ export const useDiscogsWantlist = () => {
         }),
       });
 
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('API Error Response:', errorText);
+        
+        // Try to parse as JSON first, fallback to plain text
+        let errorMessage;
+        try {
+          const errorData = JSON.parse(errorText);
+          errorMessage = errorData.message || 'Failed to add to wantlist';
+        } catch {
+          errorMessage = errorText.includes('<!DOCTYPE') 
+            ? 'API endpoint returned HTML instead of JSON. Please check server configuration.'
+            : errorText || 'Failed to add to wantlist';
+        }
+        
+        throw new Error(errorMessage);
+      }
+
       const result = await response.json();
 
       if (!response.ok) {
@@ -119,6 +137,12 @@ export const useDiscogsWantlist = () => {
       const response = await fetch(`/api/discogs/wantlist-check?releaseId=${releaseId}&tokens=${encodeURIComponent(JSON.stringify(tokens))}&username=${tokens.username}`, {
         method: 'GET',
       });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Wantlist check error:', errorText);
+        return false;
+      }
 
       const result = await response.json();
       return result.inWantlist || false;

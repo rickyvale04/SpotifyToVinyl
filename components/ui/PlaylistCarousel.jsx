@@ -7,9 +7,34 @@ import { selectedPlaylistState } from '../../atoms/selectedPlaylistAtom';
 const PlaylistCarousel = ({ playlists = [] }) => {
   const [visiblePlaylists, setVisiblePlaylists] = useState(10);
   const [showAll, setShowAll] = useState(false);
+  const [columns, setColumns] = useState(4);
   const router = useRouter();
   const setPlaylistId = useSetRecoilState(playlistIdState);
   const setSelectedPlaylist = useSetRecoilState(selectedPlaylistState);
+
+  // Calculate optimal number of columns based on window width
+  useEffect(() => {
+    const calculateColumns = () => {
+      const width = window.innerWidth;
+      // Minimum playlist width: 180px, with padding and gaps
+      const minPlaylistWidth = 180;
+      const sidebarWidth = 200; // Approximate sidebar width
+      const padding = 100; // Container padding
+      const gapWidth = 16; // Gap between items
+      
+      const availableWidth = width - sidebarWidth - padding;
+      const cols = Math.max(2, Math.floor((availableWidth + gapWidth) / (minPlaylistWidth + gapWidth)));
+      
+      // Set reasonable limits
+      const maxCols = Math.min(cols, 8);
+      setColumns(maxCols);
+    };
+
+    calculateColumns();
+    window.addEventListener('resize', calculateColumns);
+    
+    return () => window.removeEventListener('resize', calculateColumns);
+  }, []);
 
   const handlePlaylistClick = (playlist) => {
     setPlaylistId(playlist.id);
@@ -43,12 +68,17 @@ const PlaylistCarousel = ({ playlists = [] }) => {
         <p className="text-gray-400 text-sm">Seleziona una playlist per scoprire quali brani sono disponibili su vinile</p>
       </div>
 
-      {/* Grid Layout */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-4 mb-8">
+      {/* Grid Layout - Dynamic responsive columns */}
+      <div 
+        className="grid gap-4 mb-8 transition-all duration-300"
+        style={{
+          gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
+        }}
+      >
         {displayedPlaylists.map((playlist, index) => (
           <div 
             key={playlist.id}
-            className="group cursor-pointer transition-all duration-300 hover:bg-gray-900 p-3 rounded-lg"
+            className="group cursor-pointer transition-all duration-300 hover:bg-gray-900 p-3 rounded-lg min-w-0"
             onClick={() => handlePlaylistClick(playlist)}
           >
             {/* Playlist Image */}
@@ -78,11 +108,11 @@ const PlaylistCarousel = ({ playlists = [] }) => {
                 {playlist.name}
               </h3>
               <div className="flex items-center space-x-2 text-xs text-gray-400">
-                <span>{playlist.owner?.display_name || 'Playlist'}</span>
+                <span className="truncate">{playlist.owner?.display_name || 'Playlist'}</span>
                 {playlist.tracks?.total && (
                   <>
                     <span>•</span>
-                    <span>{playlist.tracks.total} brani</span>
+                    <span className="whitespace-nowrap">{playlist.tracks.total} brani</span>
                   </>
                 )}
               </div>

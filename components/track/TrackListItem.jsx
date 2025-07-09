@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import VinylItem from "../main/VinylItem";
 import { useDiscogsWantlist } from "../../hooks/useDiscogsWantlist";
 
-const TrackListItem = ({ track, index, isSelected = false, onToggleSelect }) => {
+const TrackListItem = ({ track, index }) => {
   const { addToWantlist, checkWantlistStatus, loading: wantlistLoading, isLoggedIn } = useDiscogsWantlist();
   const itemsPerPage = 5;
 
@@ -180,20 +180,17 @@ const TrackListItem = ({ track, index, isSelected = false, onToggleSelect }) => 
 
   return (
     <>
-      <div className={`grid grid-cols-12 gap-4 px-6 py-4 hover:bg-gray-800 transition-colors duration-200 group ${
-        isSelected ? 'bg-gray-800 border-l-2 border-white' : 'bg-gray-900'
-      }`}>
+      <div className="grid grid-cols-12 gap-4 px-6 py-4 hover:bg-gray-800 transition-colors duration-200 group bg-gray-900">
+        {/* Track Number */}
         <div className="col-span-1 flex items-center">
-          <input
-            type="checkbox"
-            checked={isSelected}
-            onChange={(e) => onToggleSelect(e.target.checked)}
-            className="w-4 h-4 text-white bg-gray-700 border-gray-600 focus:ring-white focus:ring-1 cursor-pointer"
-          />
+          <span className="text-sm text-gray-400 group-hover:text-gray-300 font-medium">
+            {index + 1}
+          </span>
         </div>
         
+        {/* Track Info */}
         <div className="col-span-5 flex items-center space-x-4 min-w-0">
-          <div className="w-12 h-12 bg-gray-800 flex-shrink-0 overflow-hidden border border-gray-700 group-hover:border-gray-600 transition-colors duration-200">
+          <div className="w-12 h-12 bg-gray-800 flex-shrink-0 overflow-hidden rounded-md border border-gray-700 group-hover:border-gray-600 transition-colors duration-200">
             {track.album?.images?.[0]?.url ? (
               <img
                 src={track.album.images[0].url}
@@ -219,43 +216,44 @@ const TrackListItem = ({ track, index, isSelected = false, onToggleSelect }) => 
           </div>
         </div>
         
+        {/* Album */}
         <div className="col-span-3 flex items-center">
           <p className="text-sm text-gray-400 truncate group-hover:text-gray-300 transition-colors duration-200">
             {track.album?.name}
           </p>
         </div>
         
-        <div className="col-span-1 flex items-center">
-          <p className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors duration-200">
-            {Math.floor(track.duration_ms / 60000)}:{Math.floor((track.duration_ms % 60000) / 1000).toString().padStart(2, '0')}
-          </p>
-        </div>
-
-        <div className="col-span-2 flex items-center justify-end space-x-2">
-          {vinyls.length > 0 ? (
-            <div className="flex items-center space-x-2">
-              <CheckIcon className="w-5 h-5 text-green-400" />
-              <span className="text-xs text-green-400">Available</span>
+        {/* On Discogs Status */}
+        <div className="col-span-1 flex items-center justify-center">
+          {isLoading ? (
+            <div className="w-4 h-4 border-2 border-gray-600 border-t-white rounded-full animate-spin"></div>
+          ) : vinyls.length > 0 ? (
+            <div className="flex items-center space-x-1">
+              <CheckIcon className="w-4 h-4 text-green-400" />
+              <span className="text-xs text-green-400 font-medium">Available</span>
             </div>
           ) : (
-            <div className="flex items-center space-x-2">
-              <XIcon className="w-5 h-5 text-gray-500" />
-              <span className="text-xs text-gray-500">Not found</span>
+            <div className="flex items-center space-x-1">
+              <XIcon className="w-4 h-4 text-red-400" />
+              <span className="text-xs text-red-400 font-medium">Not found</span>
             </div>
           )}
-          
+        </div>
+
+        {/* Actions */}
+        <div className="col-span-2 flex items-center justify-end space-x-2">
           {vinyls.length > 0 && (
             <button
               onClick={handleAddToWantlist}
               disabled={addingToWantlist || !isLoggedIn || wantlistStatus === true}
-              className={`text-xs px-3 py-1 transition-colors duration-200 ${
+              className={`text-xs px-3 py-1 rounded-md transition-colors duration-200 ${
                 wantlistStatus === true
-                  ? 'text-green-400 border border-green-400 cursor-not-allowed'
+                  ? 'text-green-400 bg-green-400/10 border border-green-400/20 cursor-not-allowed'
                   : addingToWantlist
-                  ? 'text-gray-500 border border-gray-500 cursor-not-allowed'
+                  ? 'text-gray-500 bg-gray-500/10 border border-gray-500/20 cursor-not-allowed'
                   : isLoggedIn
-                  ? 'text-gray-400 hover:text-white border border-gray-600 hover:border-gray-400'
-                  : 'text-gray-600 border border-gray-700 cursor-not-allowed'
+                  ? 'text-gray-400 hover:text-white bg-gray-800 hover:bg-gray-700 border border-gray-600 hover:border-gray-400'
+                  : 'text-gray-600 bg-gray-800/50 border border-gray-700 cursor-not-allowed'
               }`}
             >
               {wantlistStatus === true ? (
@@ -280,7 +278,7 @@ const TrackListItem = ({ track, index, isSelected = false, onToggleSelect }) => 
           )}
           
           <button
-            className="text-xs text-gray-400 hover:text-white border border-gray-600 hover:border-gray-400 px-3 py-1 transition-colors duration-200"
+            className="text-xs text-gray-400 hover:text-white bg-gray-800 hover:bg-gray-700 border border-gray-600 hover:border-gray-400 px-3 py-1 rounded-md transition-colors duration-200"
             onClick={() => document.getElementById(`my_modal_${track.id}`).showModal()}
           >
             Details

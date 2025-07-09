@@ -162,6 +162,7 @@ function Sidebar() {
             onClick={() => {
               setPlaylistId('');
               setSelectedPlaylist(null);
+              router.push('/');
             }}
           >
             <HomeIcon className="h-4 w-4" />
